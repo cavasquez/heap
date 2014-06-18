@@ -16,13 +16,19 @@ public abstract class LeftistTree<T> implements HeapInterface<T>
 		this.root = root;
 	}
 	
-	public void insert(T value)
+	/**
+	 * Inserts node into the tree
+	 * @param node	node being inserted into tree.
+	 */
+	protected void insert(Node<T> node)
 	{
-		this.root = this.root.merge(value);
+		this.root = this.root.merge(node);
 	}
 	
-	
-	public T remove()
+	/**
+	 * Removes the root element and merges the children to obtain a new root.
+	 */
+	public final T remove()
 	{
 		T returner = this.root.value();
 		this.root = this.root.getLeftChild().merge(this.root.getRightChild());

@@ -45,6 +45,13 @@ public abstract class Node<T>
 	}
 	
 	/**
+	 * Compares this with node and returns the "winner"
+	 * @param node	the Node being compared
+	 * @return		the "winning" node
+	 */
+	public abstract NodePair<T> compare(Node<T> node);
+	
+	/**
 	 * Merge the value with this node.
 	 * @param value	the value being merged
 	 * @return	the resulting node
@@ -56,16 +63,36 @@ public abstract class Node<T>
 	 * @param tree	the tree being merged
 	 * @return	the product of the merge
 	 */
-	public Node<T> merge(Node<T> tree)
+	public final Node<T> merge(Node<T> tree)
 	{
-		return null;
+		NodePair<T> pair = this.compare(tree);
+		pair.winner.rightChild = pair.winner.rightChild.merge(pair.loser);
+
+		// Must re-evaluate s of nodes and swap
+		return pair.winner;
+	}
+	
+	public final Integer s(Node<T> node)
+	{
+		if(node == null) return 0;
+		else return node.s();
+	}
+	
+	public final Integer s()
+	{
+		if(this.s == null)
+		{
+			
+			this.s = Math.min(this.s(this.leftChild), this.s(this.rightChild)) + 1;	
+		}
+		return this.s;
 	}
 	
 	/**
 	 * Returns value
 	 * @return	value
 	 */
-	public T value()
+	public final T value()
 	{
 		return this.value;
 	}
@@ -74,7 +101,7 @@ public abstract class Node<T>
 	 * Returns parent node
 	 * @return	parent node
 	 */
-	public Node<T> getParent()
+	public final Node<T> getParent()
 	{
 		return this.parent;
 	}
@@ -83,7 +110,7 @@ public abstract class Node<T>
 	 * Sets parent node
 	 * @param parent	parent node
 	 */
-	public void setParent(Node<T> parent)
+	public final void setParent(Node<T> parent)
 	{
 		this.parent = parent;
 	}
@@ -92,7 +119,7 @@ public abstract class Node<T>
 	 * Returns left child node
 	 * @return	left child node
 	 */
-	public Node<T> getLeftChild()
+	public final Node<T> getLeftChild()
 	{
 		return this.leftChild;
 	}
@@ -101,7 +128,7 @@ public abstract class Node<T>
 	 * Returns right child node
 	 * @return	right child node
 	 */
-	public Node<T> getRightChild()
+	public final Node<T> getRightChild()
 	{
 		return this.rightChild;
 	}
