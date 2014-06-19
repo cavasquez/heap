@@ -66,7 +66,14 @@ public abstract class LeftistTree<T> implements HeapInterface<T>
 		}
 		else
 		{
+			Integer oldS;
+			
+			/* Check which tree has the "higher ranking" value */
 			temp = this.compare(tree1, tree2);
+			
+			/* Retain old s of "high ranker" to determine if we re-evaluate 
+			 * after merge. */
+			oldS = temp.winner.s;
 			temp.winner.rightChild = this.merge(temp.winner.rightChild, temp.loser);
 		}
 		return temp.winner;

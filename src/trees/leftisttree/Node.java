@@ -88,4 +88,16 @@ public class Node<T>
 	{
 		return this.rightChild;
 	}
+
+	/**
+	 * Returns the s value for this node.
+	 * @return
+	 */
+	public Integer s() {
+		if(s == null)
+		{
+			
+		}
+		return this.s;
+	}
 }
