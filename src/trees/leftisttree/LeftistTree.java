@@ -82,11 +82,43 @@ public abstract class LeftistTree<T> implements HeapInterface<T>
 			/* Check which tree has the "higher ranking" value */
 			temp = this.compare(tree1, tree2);
 			
-			/* Retain old s of "high ranker" to determine if we re-evaluate 
-			 * after merge. */
-			oldS = temp.winner.s;
+			/* Retain old s of "high ranker"s right child to determine if 
+			 * we re-evaluate after merge. */
+			oldS = temp.winner.rightChild.s();
 			temp.winner.rightChild = this.merge(temp.winner.rightChild, temp.loser);
+			
+			/*
+			 * If the s of the "high ranker"s right child changes, re-calculate
+			 * the "high ranker"s s and re-evaluate the tree.
+			 */
+			if(oldS != temp.winner.rightChild.s())
+			{
+				temp.winner.s = null;
+				this.reEvaluate(temp.winner);
+			}
 		}
 		return temp.winner;
+	}
+	
+	/**
+	 * Evaluates the s values of node's children and swaps the children if the
+	 * left child's s is less than the right child's s.
+	 * @param tree	the tree being re-evaluated
+	 */
+	protected void reEvaluate(Node<T> tree)
+	{
+		if(tree.leftChild == null && tree.rightChild == null) {/* Do nothing */}
+		else if(tree.rightChild == null) {/* Do nothing */}
+		else if(tree.leftChild == null)
+		{
+			tree.leftChild = tree.rightChild;
+			tree.rightChild = null;
+		}
+		else if(tree.leftChild.s() < tree.rightChild.s())
+		{
+			Node<T> temp = tree.rightChild;
+			tree.rightChild = tree.leftChild;
+			tree.leftChild = temp;
+		}
 	}
 }
