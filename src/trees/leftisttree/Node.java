@@ -8,7 +8,7 @@ package trees.leftisttree;
  * 
  * @param <T> Generic Type
  */
-public abstract class Node<T>
+public class Node<T>
 {
 	/**
 	 * The S value for the Node (the length of a shortest path from this Node
@@ -42,34 +42,6 @@ public abstract class Node<T>
 	public Node(T value, Node<T> parent, Node<T> leftChild, Node<T> rightChild)
 	{
 		this(null, value, parent, leftChild, rightChild);
-	}
-	
-	/**
-	 * Compares this with node and returns the "winner"
-	 * @param node	the Node being compared
-	 * @return		the "winning" node
-	 */
-	public abstract NodePair<T> compare(Node<T> node);
-	
-	/**
-	 * Merge the value with this node.
-	 * @param value	the value being merged
-	 * @return	the resulting node
-	 */
-	public abstract Node<T> merge(T value);
-	
-	/**
-	 * Merges tree with this Node
-	 * @param tree	the tree being merged
-	 * @return	the product of the merge
-	 */
-	public final Node<T> merge(Node<T> tree)
-	{
-		NodePair<T> pair = this.compare(tree);
-		pair.winner.rightChild = pair.winner.rightChild.merge(pair.loser);
-
-		// Must re-evaluate s of nodes and swap
-		return pair.winner;
 	}
 	
 	public final Integer s(Node<T> node)
