@@ -6,7 +6,7 @@ package trees.leftisttree;
  *
  * @param <T> Generic Type
  */
-public class NodePair<T> 
+public class NodePair<T extends Comparable<T>> 
 {
 	public final Node<T> winner;
 	public final Node<T> loser;

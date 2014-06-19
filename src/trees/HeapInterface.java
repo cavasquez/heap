@@ -5,7 +5,7 @@ package trees;
  * @author Carlos Vasquez
  *
  */
-public interface HeapInterface<T>
+public interface HeapInterface<T extends Comparable<T>>
 {
 	/**
 	 * Adds the value to the Heap.

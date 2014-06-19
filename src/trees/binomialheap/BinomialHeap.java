@@ -10,7 +10,7 @@ import trees.HeapInterface;
  *
  * @param <T> Generic Type
  */
-public abstract class BinomialHeap<T> implements HeapInterface<T> 
+public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInterface<T> 
 {
 
 }

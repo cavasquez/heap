@@ -7,7 +7,7 @@ import trees.HeapInterface;
  * @author Carlos Vasquez
  *
  */
-public abstract class LeftistTree<T> implements HeapInterface<T> 
+public abstract class LeftistTree<T extends Comparable<T>> implements HeapInterface<T> 
 {
 	private Node<T> root;
 	

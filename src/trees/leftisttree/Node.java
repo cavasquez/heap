@@ -8,7 +8,7 @@ package trees.leftisttree;
  * 
  * @param <T> Generic Type
  */
-public class Node<T>
+public class Node<T extends Comparable<T>>
 {
 	/**
 	 * The S value for the Node (the length of a shortest path from this Node
