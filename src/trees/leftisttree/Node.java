@@ -58,8 +58,7 @@ public class Node<T extends Comparable<T>>
 	{
 		if(this.s == null)
 		{
-			
-			this.s = Math.min(this.s(this.leftChild), this.s(this.rightChild)) + 1;	
+			this.s = Math.min(this.s(this.leftChild), this.s(this.rightChild)) + 1;
 		}
 		return this.s;
 	}
@@ -68,7 +67,7 @@ public class Node<T extends Comparable<T>>
 	 * Returns value
 	 * @return	value
 	 */
-	public final T value()
+	public final T getValue()
 	{
 		return this.value;
 	}

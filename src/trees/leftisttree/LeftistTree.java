@@ -48,7 +48,7 @@ public abstract class LeftistTree<T extends Comparable<T>> implements HeapInterf
 	 */
 	public final T remove()
 	{
-		T returner = this.root.value();
+		T returner = this.root.getValue();
 		this.root = this.merge(this.root.leftChild, this.root.rightChild);
 		return returner;
 	}
