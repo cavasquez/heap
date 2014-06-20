@@ -2,10 +2,7 @@ package trees.leftisttree;
 
 /**
  * Node will contain the basic elements and methods that make up a 
- * LeftistTree. Node will be extended to create a MinNode or a 
- * MaxNode which determines the kind of .
- * 
- * Particularly, this node contains the following elements:
+ * LeftistTree. Particularly, this node contains the following elements:
  * Value
  * s
  * left child

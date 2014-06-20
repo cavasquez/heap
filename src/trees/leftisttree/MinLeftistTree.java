@@ -15,7 +15,8 @@ public class MinLeftistTree<T extends Comparable<T>> extends LeftistTree<T>
 	}
 
 	/**
-	 * This method assumes that value is never null.
+	 * This method assumes that value is never null and that neither node1
+	 * nor node2 is ever null.
 	 */
 	@Override
 	protected NodePair<T> compare(Node<T> node1, Node<T> node2) 
