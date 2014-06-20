@@ -9,7 +9,7 @@ import trees.HeapInterface;
  */
 public abstract class LeftistTree<T extends Comparable<T>> implements HeapInterface<T> 
 {
-	private Node<T> root;
+	protected Node<T> root;
 	
 	public LeftistTree(Node<T> root)
 	{
@@ -62,10 +62,11 @@ public abstract class LeftistTree<T extends Comparable<T>> implements HeapInterf
 	public Node<T> merge(Node<T> tree1, Node<T> tree2)
 	{
 		NodePair<T> temp = null;
+		
 		/* Check cases */
 		if(tree1 == null && tree2 == null)
 		{
-			temp = null;
+			temp = new NodePair<T>(null, null);
 		}
 		else if(tree1 == null)
 		{
@@ -84,14 +85,14 @@ public abstract class LeftistTree<T extends Comparable<T>> implements HeapInterf
 			
 			/* Retain old s of "high ranker"s right child to determine if 
 			 * we re-evaluate after merge. */
-			oldS = temp.winner.rightChild.s();
+			oldS = temp.winner.s(temp.winner.rightChild);
 			temp.winner.rightChild = this.merge(temp.winner.rightChild, temp.loser);
 			
 			/*
 			 * If the s of the "high ranker"s right child changes, re-calculate
 			 * the "high ranker"s s and re-evaluate the tree.
 			 */
-			if(oldS != temp.winner.rightChild.s())
+			if(oldS != temp.winner.s(temp.winner.rightChild))
 			{
 				temp.winner.s = null;
 				this.reEvaluate(temp.winner);
