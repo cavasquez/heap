@@ -55,10 +55,30 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 		}
 	}
 	
-	
+	/**
+	 * Returns the value of the root and does a merge pass on its siblings and
+	 * finds the "winner" among the siblings to make the new root.
+	 */
 	public T remove()
 	{
 		Node<T> temp = this.root;
+		Node<T> child = this.root.getChild();
+		
+		/* Add the children to the list of siblings and remove the root from
+		 * the list. */
+		this.root.addSibling(child);
+		child.sibling = this.root.sibling;
+		
+		/* Merge pass and find new root. Then return value */
+		this.root = this.mergePass(this.root);
+		return temp.getValue();
+	}
+	
+	protected Node<T> mergePass(Node<T> node)
+	{
+		Node<T> returner = null;
+		Node<T> start = node;
+		return returner;
 	}
 	
 	public Node<T> getRoot() { return this.root; }

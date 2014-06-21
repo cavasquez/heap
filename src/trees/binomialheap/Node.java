@@ -16,8 +16,8 @@ public class Node<T extends Comparable<T>>
 {
 	private int degree;
 	private T value;
-	private Node<T> child;
-	private Node<T> sibling;
+	protected Node<T> child;
+	protected Node<T> sibling;
 	
 	private Node(Integer degree, T value, Node<T> child, Node<T> sibling)
 	{
