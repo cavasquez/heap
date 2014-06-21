@@ -27,10 +27,9 @@ public class Node<T extends Comparable<T>>
 		this.sibling = sibling;
 	}
 	
-	public Node(T value)
-	{
-		this(0, value, null, null);
-	}
+	public Node() { this(0, null, null, null); }
+	
+	public Node(T value) { this(0, value, null, null); }
 	
 	/**
 	 * Adds the sibling to this node's list of siblings. The sibling is added
