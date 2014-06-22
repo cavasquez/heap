@@ -15,7 +15,7 @@ package trees.binomialheap;
 public class Node<T extends Comparable<T>> 
 {
 	private int degree;
-	private T value;
+	protected T value;
 	protected Node<T> child;
 	protected Node<T> sibling;
 	
@@ -24,7 +24,7 @@ public class Node<T extends Comparable<T>>
 		this.degree = degree;
 		this.value = value;
 		this.child = child;
-		this.sibling = sibling;
+		if(sibling == null) this.sibling = this;
 	}
 	
 	public Node() { this(0, null, null, null); }
@@ -37,11 +37,8 @@ public class Node<T extends Comparable<T>>
 	 */
 	public void addSibling(Node<T> sibling)
 	{
-		Node<T> temp = null;
-		if(this.sibling == null) temp = this;
-		else temp = this.sibling;
-		if(sibling.sibling ==  null) this.sibling = sibling;
-		else this.sibling = sibling.sibling;
+		Node<T> temp = this.sibling;
+		this.sibling = sibling.sibling;
 		sibling.sibling = temp;
 	}
 	
@@ -58,13 +55,19 @@ public class Node<T extends Comparable<T>>
 	 */
 	public void addChild(Node<T> child) throws UnequalChildrenException
 	{
+		System.out.println("addChild: attempting to add " + child.print() + " to " + this.print());
 		if(this.degree == child.degree)
 		{
 			if(this.child == null) this.child = child;
 			else this.child.addSibling(child);
 			this.degree++;
 		}
-		else throw new UnequalChildrenException(this + " and " + child + " have unequal children");
+		else throw new UnequalChildrenException(this + " and " + child + " have unequal children (" + this.degree + "," + child.degree + ")");
+	}
+	
+	public String print()
+	{
+		return ("(" + this.value + "," + this.degree + ")");
 	}
 	
 	public int getDegree() { return this.degree; }

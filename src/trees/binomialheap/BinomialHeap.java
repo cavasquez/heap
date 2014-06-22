@@ -16,14 +16,10 @@ import trees.HeapInterface;
  */
 public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInterface<T> 
 {
-	private Node<T> root;
+	protected Node<T> root;
 	
-	public BinomialHeap(T value)
-	{
-		this.root = new Node<T>(value);
-	}
-	
-	public BinomialHeap() { this(null); }
+	public BinomialHeap(T value) { this.root = new Node<T>(value); }
+	public BinomialHeap() { this.root = null; }
 	
 	/**
 	 * Compare will be implemented by the subclass of BinomialHeap and used to
@@ -83,8 +79,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	protected Node<T> pairwiseCombine(Node<T> node) throws UnequalChildrenException
 	{
 		Node<T> returner = null;
-		Node<T> previous = node;
-		Node<T> current = node.sibling;
+		History<T> hist = new History<T>(node.sibling, node);
 		Node<T> temp = null;
 		Node<T> children = node.child;
 		NodePair<T> comp = null;
@@ -96,22 +91,22 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 		
 		/* Start by merging the siblings of node keep going until we hit node
 		 * again. Also look for the "winner" */
-		while(current != node)
+		while(hist.current != node)
 		{
-			this.pass(returner, previous, current, temp, comp, commonDegrees);
+			this.pass(returner, hist, temp, comp, commonDegrees);
 		}
 		
 		/* remove node from the list */
-		previous.sibling = node.sibling;
+		hist.previous.sibling = node.sibling;
 		
 		/* Now merge the children in with the siblings */
-		previous.addSibling(children);
-		current = previous.sibling;
+		hist.previous.addSibling(children);
+		hist.current = hist.previous.sibling;
 		
 		/* Make a final pass with the children */
 		for(int i = 0; i < node.getDegree(); i++)
 		{
-			this.pass(returner, previous, current, temp, comp, commonDegrees);
+			this.pass(returner, hist, temp, comp, commonDegrees);
 		}
 		
 		return returner;
@@ -128,31 +123,81 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	 * @throws UnequalChildrenException
 	 */
 	protected void pass(Node<T> returner,
-		Node<T> previous,
-		Node<T> current,
+		History<T> hist,
 		Node<T> temp,
 		NodePair<T> comp,
 		Vector<Node<T>> commonDegrees) throws UnequalChildrenException
 	{
 		/* look for next root */
-		returner = this.compare(current, returner).winner;
-		this.ensureSize(commonDegrees, current.getDegree());
-		if(commonDegrees.get(current.getDegree()) == null) commonDegrees.set(current.getDegree(), previous);
-		else if(commonDegrees.get(current.getDegree()) != current)
+		returner = this.compare(hist.current, returner).winner;
+		this.mergeDegrees(hist, temp, comp, commonDegrees);
+	}
+	
+	/**
+	 * 
+	 * @param hist			contains the current and previous nodes of the 
+	 * 						current node who is being merged
+	 * @param commonDegrees	the vector of nodes by degree
+	 */
+	public void mergeDegrees(History<T> hist,
+			Node<T> temp,
+			NodePair<T> comp,
+			Vector<Node<T>> commonDegrees) throws UnequalChildrenException
+	{
+		this.ensureSize(commonDegrees, hist.current.getDegree() + 1);
+		if(commonDegrees.get(hist.current.getDegree()) == null)
 		{
+			/* No other node with matching degree found. Add previous node to 
+			 * commonDegrees and then set new pointers for current and previous. */
+			commonDegrees.set(hist.current.getDegree(), hist.previous);
+			hist.previous = hist.current;
+			hist.current = hist.current.sibling;
+		}
+		else if(commonDegrees.get(hist.current.getDegree()) != hist.current)
+		{
+			Node<T> common = null;
+			temp = commonDegrees.get(hist.current.getDegree());
+			
 			/* remove the common degree from list and merge it with its 
 			 * common degree according to the comparator */
-			temp = commonDegrees.get(current.getDegree());
-			commonDegrees.set(current.getDegree(), null);
-			comp = this.compare(current, previous, temp.sibling, temp);
+			commonDegrees.set(hist.current.getDegree(), null);
+			comp = this.compare(hist.current, hist.previous, temp.sibling, temp);
+			
+			/* Before removing the common degree from the list, ensure that the
+			 * node with the common degree is not also a "previous" pointer for
+			 * another element in the list if common is used, it is possible 
+			 * that it may become a child of another node. If it does become 
+			 * the child of another node and still exists in commonDegree, it 
+			 * will incorrectly point to the wrong in the list of siblings. It 
+			 * will only become the child of another node if it is the "loser" 
+			 * from compare(). */
+			common = temp.sibling;
+			this.ensureSize(commonDegrees, common.sibling.getDegree() + 1);
+			if(commonDegrees.get(common.sibling.getDegree()) == common &&
+				common == comp.loser)
+			{
+				/* Replace common with its "previous" in commonDegrees, which
+				 * can be obtained by looking for the common's degree in 
+				 * commondegree. 
+				 * The modification of commons previous to point to commons 
+				 * sibling will occur later (as it had to anyways) */
+				Node<T> previousCommon = commonDegrees.get(common.getDegree());
+				commonDegrees.set(common.sibling.getDegree(), previousCommon);
+			}
 			
 			/* Remove loser from siblings */
 			comp.previousLoser.sibling = comp.loser.sibling;
 			
 			/* remove siblings from loser and make it a child */
-			comp.loser.sibling = null;
+			comp.loser.sibling = comp.loser;
 			comp.winner.addChild(comp.loser);
-			commonDegrees.set(comp.winner.getDegree(), comp.previousWinner);
+			
+			/* Progress the history */
+			hist.previous = hist.current;
+			hist.current = hist.current.sibling;
+			
+			/* Attempt to merge the winner with another node */
+			this.mergeDegrees(new History<T>(comp.winner, comp.previousWinner), temp, comp, commonDegrees);
 		}
 	}
 	
@@ -163,13 +208,10 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	 */
 	protected void ensureSize(Vector<Node<T>> vec, int size)
 	{
-		if(vec.size() < (size+1))
+		if(vec.size() < size)
 		{
 			vec.ensureCapacity(size);
-		    while (vec.size() < (size+1)) 
-		    {
-		        vec.add(null);
-		    }
+		    while (vec.size() < size) { vec.add(null); }
 		}
 	}
 }

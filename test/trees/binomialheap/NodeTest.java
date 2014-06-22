@@ -18,7 +18,7 @@ public class NodeTest
 		assertEquals(0, test.getDegree());
 		assertEquals(true, test.getValue() == 5);
 		assertNull(test.getChild());
-		assertNull(test.getSibling());
+		assertSame(test, test.getSibling());
 	}
 	
 	@Test
@@ -56,8 +56,8 @@ public class NodeTest
 		assertEquals(0, test2.getDegree());
 		assertSame(test2, test1.getChild());
 		assertNull(test2.getChild());
-		assertNull(test1.getSibling());
-		assertNull(test2.getSibling());
+		assertSame(test1, test1.getSibling());
+		assertSame(test2, test2.getSibling());
 		
 		try
 		{
@@ -68,8 +68,8 @@ public class NodeTest
 		assertEquals(0, test4.getDegree());
 		assertSame(test4, test3.getChild());
 		assertNull(test4.getChild());
-		assertNull(test3.getSibling());
-		assertNull(test4.getSibling());
+		assertSame(test3, test3.getSibling());
+		assertSame(test4, test4.getSibling());
 		
 		try
 		{
@@ -88,8 +88,8 @@ public class NodeTest
 		
 		assertSame(test3, test2.getSibling());
 		assertSame(test3, test2.getSibling());
-		assertNull(test1.getSibling());
-		assertNull(test4.getSibling());
+		assertSame(test1, test1.getSibling());
+		assertSame(test4, test4.getSibling());
 		
 		try 
 		{ 
