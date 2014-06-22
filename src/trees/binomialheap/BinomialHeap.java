@@ -98,31 +98,35 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 		 * again. Also look for the "winner" */
 		while(current != node)
 		{
-			/* look for next root */
-			returner = this.compare(current, returner).winner;
-			this.ensureSize(commonDegrees, current.getDegree());
-			if(commonDegrees.get(current.getDegree()) == null) commonDegrees.set(current.getDegree(), previous);
-			else if(commonDegrees.get(current.getDegree()) != current)
-			{
-				/* remove the common degree from list and merge it with its 
-				 * common degree according to the comparator */
-				temp = commonDegrees.get(current.getDegree());
-				commonDegrees.set(current.getDegree(), null);
-				comp = this.compare(current, previous, temp.sibling, temp);
-				
-				/* Remove loser from siblings */
-				comp.previousLoser.sibling = comp.loser.sibling;
-				
-				/* remove siblings from loser and make it a child */
-				comp.loser.sibling = null;
-				comp.winner.addChild(comp.loser);
-				commonDegrees.set(comp.winner.getDegree(), comp.previousWinner);
-			}
+			this.pass(returner, previous, current, temp, comp, commonDegrees);
+		}
+		
+		/* remove node from the list */
+		previous.sibling = node.sibling;
+		
+		/* Now merge the children in with the siblings */
+		previous.addSibling(children);
+		current = previous.sibling;
+		
+		/* Make a final pass with the children */
+		for(int i = 0; i < node.getDegree(); i++)
+		{
+			this.pass(returner, previous, current, temp, comp, commonDegrees);
 		}
 		
 		return returner;
 	}
 	
+	/**
+	 * Helper function for pairwiseCompare
+	 * @param returner		the old/next winner 
+	 * @param previous		the node before the current node
+	 * @param current		the current node in the list
+	 * @param temp			a temporary holder
+	 * @param comp			the NodePair used for comparisons
+	 * @param commonDegrees	the list of nodes with a given degree
+	 * @throws UnequalChildrenException
+	 */
 	protected void pass(Node<T> returner,
 		Node<T> previous,
 		Node<T> current,
