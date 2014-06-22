@@ -120,55 +120,43 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 			}
 		}
 		
-//		Queue<Node<T>> list = new LinkedList<Node<T>>();
-//		Node<T> current = node.sibling;
-//		Node<T> temp = null;
-//		
-//		/* Put the siblings into the list */
-//		while(node != current)
-//		{
-//			temp = current.sibling;
-//			current.sibling = null;
-//			list.add(current);
-//			returner = this.compare(current, returner).winner;
-//			current = temp;
-//		}
-//		
-//		/* put children into the list */
-//		int count = node.getDegree();
-//		current = node.child;
-//		for(int i = 0; i < count; i++)
-//		{
-//			temp = current.sibling;
-//			current.sibling = null;
-//			list.add(current);
-//			returner = this.compare(current, returner).winner;
-//			current = temp;
-//		}
-//		
-//		/* Merge the Nodes in the list into commonDegrees */
-//		Vector<Node<T>> commonDegrees = new Vector<Node<T>>();
-//		NodePair<T> comp = null;
-//		while(list.peek() != null)
-//		{
-//			current = list.poll();
-//			this.ensureSize(commonDegrees, current.getDegree());
-//			if(commonDegrees.get(current.getDegree()) == null) commonDegrees.set(current.getDegree(), current);
-//			else if(commonDegrees.get(current.getDegree()) != current)
-//			{
-//				/* remove the common degree from list and merge it with its 
-//				 * common degree according to the comparator */
-//				temp = commonDegrees.get(current.getDegree());
-//				commonDegrees.set(current.getDegree(), null);
-//				comp = this.compare(current, temp);
-//				comp.winner.addChild(comp.loser);
-//				commonDegrees.set(comp.winner.getDegree(), comp.winner);
-//			}
-//		}
-		
 		return returner;
 	}
 	
+	protected void pass(Node<T> returner,
+		Node<T> previous,
+		Node<T> current,
+		Node<T> temp,
+		NodePair<T> comp,
+		Vector<Node<T>> commonDegrees) throws UnequalChildrenException
+	{
+		/* look for next root */
+		returner = this.compare(current, returner).winner;
+		this.ensureSize(commonDegrees, current.getDegree());
+		if(commonDegrees.get(current.getDegree()) == null) commonDegrees.set(current.getDegree(), previous);
+		else if(commonDegrees.get(current.getDegree()) != current)
+		{
+			/* remove the common degree from list and merge it with its 
+			 * common degree according to the comparator */
+			temp = commonDegrees.get(current.getDegree());
+			commonDegrees.set(current.getDegree(), null);
+			comp = this.compare(current, previous, temp.sibling, temp);
+			
+			/* Remove loser from siblings */
+			comp.previousLoser.sibling = comp.loser.sibling;
+			
+			/* remove siblings from loser and make it a child */
+			comp.loser.sibling = null;
+			comp.winner.addChild(comp.loser);
+			commonDegrees.set(comp.winner.getDegree(), comp.previousWinner);
+		}
+	}
+	
+	/**
+	 * Ensures that the Vector is always of sufficient size
+	 * @param vec	the vector being adjusted
+	 * @param size	the size to which the vector is being adjusted
+	 */
 	protected void ensureSize(Vector<Node<T>> vec, int size)
 	{
 		if(vec.size() < (size+1))
