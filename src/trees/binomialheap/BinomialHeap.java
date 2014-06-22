@@ -196,8 +196,17 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 			hist.previous = hist.current;
 			hist.current = hist.current.sibling;
 			
-			/* Attempt to merge the winner with another node */
-			this.mergeDegrees(new History<T>(comp.winner, comp.previousWinner), temp, comp, commonDegrees);
+			/* Attempt to merge the winner with another node if there exists
+			 * another node of equal degree. If not, insert it into commonDegrees */
+			this.ensureSize(commonDegrees, comp.winner.getDegree() + 1);
+			if(commonDegrees.get(comp.winner.getDegree()) != null)
+			{
+				this.mergeDegrees(new History<T>(comp.winner, comp.previousWinner), temp, comp, commonDegrees);
+			}
+			else
+			{
+				commonDegrees.set(comp.winner.getDegree(), comp.previousWinner);
+			}
 		}
 	}
 	
