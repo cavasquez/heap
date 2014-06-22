@@ -34,9 +34,9 @@ public class NodeTest
 		assertSame(test1, test2.getSibling());
 		
 		test1.addSibling(test3);
-		assertSame(test2, test1.getSibling());
-		assertSame(test3, test2.getSibling());
-		assertSame(test1, test3.getSibling());
+		assertSame(test3, test1.getSibling());
+		assertSame(test1, test2.getSibling());
+		assertSame(test2, test3.getSibling());
 	}
 	
 	@Test

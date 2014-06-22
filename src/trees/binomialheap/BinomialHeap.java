@@ -38,6 +38,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	 * @return	the NodePair determining the "winner" and "loser" nodes.
 	 */
 	protected abstract NodePair<T> compare(Node<T> node1, Node<T> node2);
+	protected abstract NodePair<T> compare(Node<T> node1, Node<T> prevNode1, Node<T> node2, Node<T> prevNode2);
 	
 	public void insert(T value)
 	{
@@ -69,7 +70,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 		Node<T> temp = this.root;
 		
 		/* Merge pass and find new root. Then return value */
-		try { this.root = this.mergePass(this.root); } 
+		try { this.root = this.pairwiseCombine(this.root); } 
 		catch (UnequalChildrenException e) { e.printStackTrace();	}
 		return temp.getValue();
 	}
@@ -79,61 +80,93 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	 * @param node	the root
 	 * @return		the new root
 	 */
-	protected Node<T> mergePass(Node<T> node) throws UnequalChildrenException
+	protected Node<T> pairwiseCombine(Node<T> node) throws UnequalChildrenException
 	{
 		Node<T> returner = null;
-		Queue<Node<T>> list = new LinkedList<Node<T>>();
+		Node<T> previous = node;
 		Node<T> current = node.sibling;
 		Node<T> temp = null;
-		
-		/* Put the siblings into the list */
-		while(node != current)
-		{
-			temp = current.sibling;
-			current.sibling = null;
-			list.add(current);
-			returner = this.compare(current, returner).winner;
-			current = temp;
-		}
-		
-		/* put children into the list */
-		int count = node.getDegree();
-		current = node.child;
-		for(int i = 0; i < count; i++)
-		{
-			temp = current.sibling;
-			current.sibling = null;
-			list.add(current);
-			returner = this.compare(current, returner).winner;
-			current = temp;
-		}
-		
-		/* Merge the Nodes in the list into commonDegrees */
-		Vector<Node<T>> commonDegrees = new Vector<Node<T>>();
+		Node<T> children = node.child;
 		NodePair<T> comp = null;
-		while(list.peek() != null)
+		
+		/* common degrees will contain the nodes to the node with a sibling
+		 * to a node that contains a given degree. The degree will act as a
+		 * sort of key. */
+		Vector<Node<T>> commonDegrees = new Vector<Node<T>>();
+		
+		/* Start by merging the siblings of node keep going until we hit node
+		 * again. Also look for the "winner" */
+		while(current != node)
 		{
-			current = list.poll();
+			/* look for next root */
+			returner = this.compare(current, returner).winner;
 			this.ensureSize(commonDegrees, current.getDegree());
-			if(commonDegrees.get(current.getDegree()) == null) commonDegrees.set(current.getDegree(), current);
+			if(commonDegrees.get(current.getDegree()) == null) commonDegrees.set(current.getDegree(), previous);
 			else if(commonDegrees.get(current.getDegree()) != current)
 			{
 				/* remove the common degree from list and merge it with its 
 				 * common degree according to the comparator */
 				temp = commonDegrees.get(current.getDegree());
 				commonDegrees.set(current.getDegree(), null);
-				comp = this.compare(current, temp);
+				comp = this.compare(current, previous, temp.sibling, temp);
+				
+				/* Remove loser from siblings */
+				comp.previousLoser.sibling = comp.loser.sibling;
+				
+				/* remove siblings from loser and make it a child */
+				comp.loser.sibling = null;
 				comp.winner.addChild(comp.loser);
-				commonDegrees.set(comp.winner.getDegree(), comp.winner);
+				commonDegrees.set(comp.winner.getDegree(), comp.previousWinner);
 			}
 		}
 		
-		return returner;
-	}
-	
-	protected void merge(Vector<Node<T>> pass, Node<T> node)
-	{
+//		Queue<Node<T>> list = new LinkedList<Node<T>>();
+//		Node<T> current = node.sibling;
+//		Node<T> temp = null;
+//		
+//		/* Put the siblings into the list */
+//		while(node != current)
+//		{
+//			temp = current.sibling;
+//			current.sibling = null;
+//			list.add(current);
+//			returner = this.compare(current, returner).winner;
+//			current = temp;
+//		}
+//		
+//		/* put children into the list */
+//		int count = node.getDegree();
+//		current = node.child;
+//		for(int i = 0; i < count; i++)
+//		{
+//			temp = current.sibling;
+//			current.sibling = null;
+//			list.add(current);
+//			returner = this.compare(current, returner).winner;
+//			current = temp;
+//		}
+//		
+//		/* Merge the Nodes in the list into commonDegrees */
+//		Vector<Node<T>> commonDegrees = new Vector<Node<T>>();
+//		NodePair<T> comp = null;
+//		while(list.peek() != null)
+//		{
+//			current = list.poll();
+//			this.ensureSize(commonDegrees, current.getDegree());
+//			if(commonDegrees.get(current.getDegree()) == null) commonDegrees.set(current.getDegree(), current);
+//			else if(commonDegrees.get(current.getDegree()) != current)
+//			{
+//				/* remove the common degree from list and merge it with its 
+//				 * common degree according to the comparator */
+//				temp = commonDegrees.get(current.getDegree());
+//				commonDegrees.set(current.getDegree(), null);
+//				comp = this.compare(current, temp);
+//				comp.winner.addChild(comp.loser);
+//				commonDegrees.set(comp.winner.getDegree(), comp.winner);
+//			}
+//		}
 		
+		return returner;
 	}
 	
 	protected void ensureSize(Vector<Node<T>> vec, int size)

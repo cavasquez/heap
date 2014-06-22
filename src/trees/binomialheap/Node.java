@@ -32,18 +32,17 @@ public class Node<T extends Comparable<T>>
 	public Node(T value) { this(0, value, null, null); }
 	
 	/**
-	 * Adds the sibling to this node's list of siblings. This method can only
-	 * add a single node with no siblings to this nodes list of siblings.
-	 * sibling is null.
-	 * @param sibling
+	 * Adds the sibling to this node's list of siblings. 
+	 * @param sibling	the node(s) being melded with this node's siblings.
 	 */
 	public void addSibling(Node<T> sibling)
 	{
-		Node<T> temp = this.sibling;
-		if(this.sibling != null) temp = this.sibling;
-		else temp = this;
-		sibling.sibling = this;
-		temp.sibling = sibling;
+		Node<T> temp = null;
+		if(this.sibling == null) temp = this;
+		else temp = this.sibling;
+		if(sibling.sibling ==  null) this.sibling = sibling;
+		else this.sibling = sibling.sibling;
+		sibling.sibling = temp;
 	}
 	
 	/***
