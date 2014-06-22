@@ -69,7 +69,8 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 		Node<T> temp = this.root;
 		
 		/* Merge pass and find new root. Then return value */
-		this.root = this.mergePass(this.root);
+		try { this.root = this.mergePass(this.root); } 
+		catch (UnequalChildrenException e) { e.printStackTrace();	}
 		return temp.getValue();
 	}
 	
@@ -78,21 +79,21 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	 * @param node	the root
 	 * @return		the new root
 	 */
-	protected Node<T> mergePass(Node<T> node)
+	protected Node<T> mergePass(Node<T> node) throws UnequalChildrenException
 	{
 		Node<T> returner = null;
 		Queue<Node<T>> list = new LinkedList<Node<T>>();
 		Node<T> current = node.sibling;
-		Node<T> next = null;
+		Node<T> temp = null;
 		
 		/* Put the siblings into the list */
 		while(node != current)
 		{
-			next = current.sibling;
+			temp = current.sibling;
 			current.sibling = null;
 			list.add(current);
 			returner = this.compare(current, returner).winner;
-			current = next;
+			current = temp;
 		}
 		
 		/* put children into the list */
@@ -100,15 +101,16 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 		current = node.child;
 		for(int i = 0; i < count; i++)
 		{
-			next = current.sibling;
+			temp = current.sibling;
 			current.sibling = null;
 			list.add(current);
 			returner = this.compare(current, returner).winner;
-			current = next;
+			current = temp;
 		}
 		
-		/* Merge the Nodes in the list */
+		/* Merge the Nodes in the list into commonDegrees */
 		Vector<Node<T>> commonDegrees = new Vector<Node<T>>();
+		NodePair<T> comp = null;
 		while(list.peek() != null)
 		{
 			current = list.poll();
@@ -116,9 +118,13 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 			if(commonDegrees.get(current.getDegree()) == null) commonDegrees.set(current.getDegree(), current);
 			else if(commonDegrees.get(current.getDegree()) != current)
 			{
-				/* remove the common degree from list, merge it with its common
-				 * degree according to the comparator, and reinsert it into the
-				 * list.  */
+				/* remove the common degree from list and merge it with its 
+				 * common degree according to the comparator */
+				temp = commonDegrees.get(current.getDegree());
+				commonDegrees.set(current.getDegree(), null);
+				comp = this.compare(current, temp);
+				comp.winner.addChild(comp.loser);
+				commonDegrees.set(comp.winner.getDegree(), comp.winner);
 			}
 		}
 		
