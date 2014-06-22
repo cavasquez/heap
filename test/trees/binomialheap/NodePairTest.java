@@ -2,6 +2,9 @@ package trees.binomialheap;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.Vector;
+
 import org.junit.Test;
 
 public class NodePairTest {

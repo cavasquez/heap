@@ -32,8 +32,8 @@ public class Node<T extends Comparable<T>>
 	public Node(T value) { this(0, value, null, null); }
 	
 	/**
-	 * Adds the sibling to this node's list of siblings. The sibling is added
-	 * "before" the current sibling. This method does not check to see if
+	 * Adds the sibling to this node's list of siblings. This method can only
+	 * add a single node with no siblings to this nodes list of siblings.
 	 * sibling is null.
 	 * @param sibling
 	 */
