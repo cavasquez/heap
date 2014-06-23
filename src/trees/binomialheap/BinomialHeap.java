@@ -238,12 +238,47 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	 * @param vec	the vector being adjusted
 	 * @param size	the size to which the vector is being adjusted
 	 */
-	protected void ensureSize(Vector<Node<T>> vec, int size)
+	protected void ensureSize(Vector vec, int size)
 	{
 		if(vec.size() < size)
 		{
 			vec.ensureCapacity(size);
 		    while (vec.size() < size) { vec.add(null); }
 		}
+	}
+	
+	/**
+	 * Returns a string representation of the BinomialTree where the contents of 
+	 * each level are grouped.
+	 */
+	@Override
+	public String toString()
+	{
+		Vector<StringBuffer> content = new Vector<StringBuffer>();
+		StringBuffer returner = new StringBuffer();
+		this.getString(content, this.root, this.root, 0, true);
+		for(int i = 0; i < content.size(); i++)
+		{
+			returner.append("Level " + (i+1) + ":[" + content.get(i).substring(0, content.get(i).length()) + "]");
+		}
+		return returner.toString();
+	}
+	
+	/**
+	 * /**
+	 * Puts a string representation of node into content divided by "level"
+	 * @param content		the holer that keeps track of the strings
+	 * @param current		the current node being parsed
+	 * @param levelRoot		the node pointed to by the parent
+	 * @param level			the current level
+	 * @param fromLevelRoot	whether or not this method was started by levelRoot
+	 */
+	protected void getString(Vector<StringBuffer> content, Node<T> current, Node<T> levelRoot, int level, boolean fromLevelRoot)
+	{
+		this.ensureSize(content, level+1);
+		content.get(level).append(current.getValue().toString());
+		content.get(level).append(",");
+		this.getString(content, current.child, current.child, level+1, true);
+		if(current != levelRoot || fromLevelRoot) this.getString(content, current.sibling, levelRoot, level, false);
 	}
 }
