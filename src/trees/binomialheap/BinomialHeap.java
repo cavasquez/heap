@@ -67,7 +67,11 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 		
 		/* Merge pass and find new root. Then return value */
 		try { this.root = this.pairwiseCombine(this.root); } 
-		catch (UnequalChildrenException e) { e.printStackTrace();	}
+		catch (UnequalChildrenException e) 
+		{ 
+			e.printStackTrace();
+			this.root = null;
+		}
 		return temp.getValue();
 	}
 	
@@ -113,13 +117,17 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	}
 	
 	/**
-	 * Helper function for pairwiseCompare
+	 * Helper function for pairwiseCompare. This method will merge all the
+	 * nodes of common degrees with current and then return the node with
+	 * the "winning" value between hist.current and returner
 	 * @param returner		the old/next winner 
-	 * @param previous		the node before the current node
-	 * @param current		the current node in the list
+	 * @param hist			the collection of the current and previous nodes			
 	 * @param temp			a temporary holder
 	 * @param comp			the NodePair used for comparisons
-	 * @param commonDegrees	the list of nodes with a given degree
+	 * @param commonDegrees	the vector of nodes by degree. The degree of a node
+	 * 						should act as the index in the vector and the node
+	 * 						at the given index should be Node whose sibling has
+	 * 						the degree of the index.
 	 * @throws UnequalChildrenException
 	 */
 	protected void pass(Node<T> returner,
@@ -134,10 +142,17 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	}
 	
 	/**
-	 * 
+	 * Performs the merge between hist.current and any nodes with the same
+	 * degree in commonDegrees. The resulting node will also be merged with
+	 * any nodes in commonDegrees. This is done recursively. Furthermore,
+	 * hist is modified so that the "next" node in the list of siblings is
+	 * appropriately set.
 	 * @param hist			contains the current and previous nodes of the 
 	 * 						current node who is being merged
-	 * @param commonDegrees	the vector of nodes by degree
+	 * @param commonDegrees	the vector of nodes by degree. The degree of a node
+	 * 						should act as the index in the vector and the node
+	 * 						at the given index should be Node whose sibling has
+	 * 						the degree of the index.
 	 */
 	public void mergeDegrees(History<T> hist,
 			Node<T> temp,
@@ -153,7 +168,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 			hist.previous = hist.current;
 			hist.current = hist.current.sibling;
 		}
-		else if(commonDegrees.get(hist.current.getDegree()) != hist.current)
+		else if(commonDegrees.get(hist.current.getDegree()) != hist.current) // this if should never be false
 		{
 			Node<T> common = null;
 			temp = commonDegrees.get(hist.current.getDegree());
@@ -178,14 +193,14 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 			{
 				/* Replace common with its "previous" in commonDegrees, which
 				 * can be obtained by looking for the common's degree in 
-				 * commondegree. 
+				 * commonDegrees. 
 				 * The modification of commons previous to point to commons 
 				 * sibling will occur later (as it had to anyways) */
 				Node<T> previousCommon = commonDegrees.get(common.getDegree());
 				commonDegrees.set(common.sibling.getDegree(), previousCommon);
 			}
 			
-			/* Remove loser from siblings */
+			/* Remove loser from siblings while maintaining the current siblings */
 			comp.previousLoser.sibling = comp.loser.sibling;
 			
 			/* remove siblings from loser and make it a child */
