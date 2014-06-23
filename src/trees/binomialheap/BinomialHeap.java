@@ -108,14 +108,17 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 		hist.previous.sibling = node.sibling;
 		
 		/* Now merge the children in with the siblings */
-		hist.previous.addSibling(children);
-		hist.current = hist.previous.sibling;
-		
-		/* Make a final pass with the children */
-		for(int i = 0; i < node.getDegree(); i++)
+		if(children != null)
 		{
-			this.pass(hist, temp, comp, commonDegrees);
-		}
+			hist.previous.addSibling(children);
+			hist.current = hist.previous.sibling;
+			
+			/* Make a final pass with the children */
+			for(int i = 0; i < node.getDegree(); i++)
+			{
+				this.pass(hist, temp, comp, commonDegrees);
+			}
+		}		
 		
 		return hist.winning;
 	}
