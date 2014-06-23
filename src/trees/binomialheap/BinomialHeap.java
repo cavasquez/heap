@@ -100,7 +100,12 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 			this.pass(returner, hist, temp, comp, commonDegrees);
 		}
 		
-		/* remove node from the list */
+		/* remove node from the list and make sure it's not in commonDegrees */
+		this.ensureSize(commonDegrees, node.sibling.getDegree() + 1);
+		if(commonDegrees.get(node.sibling.getDegree()) == node)
+		{
+			commonDegrees.set(node.sibling.getDegree(), hist.previous);
+		}
 		hist.previous.sibling = node.sibling;
 		
 		/* Now merge the children in with the siblings */
