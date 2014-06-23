@@ -11,39 +11,87 @@ public class MinBinomialHeapTest
 	public void stressTest() 
 	{
 		MinBinomialHeap<Integer> test = new MinBinomialHeap<Integer>();
-		System.out.println("Insert 13");
 		test.insert(13);		
 		assertEquals(true, test.root.value == 13);
 		assertEquals(true, test.root.sibling.value == 13);
 		
-		System.out.println("Insert 4");
 		test.insert(4);		
 		assertEquals(true, test.root.value == 4);
 		assertEquals(true, test.root.sibling.value == 13);
 		assertEquals(true, test.root.sibling.sibling.value == 4);
 		
-		System.out.println("Insert 7");
 		test.insert(7);
-		System.out.println("remove 4");
-		assertEquals(true, test.remove() == 4);
-		System.out.println("Insert 2");
-		test.insert(2);
-		System.out.println("Insert 11");
-		test.insert(11);
-		System.out.println("Insert 8");
-		test.insert(8);
-		System.out.println("remove 2");
-		assertEquals(true, test.remove() == 2);
-		System.out.println("insert 1");
-		test.insert(1);
-		System.out.println("remove 10");
-		test.insert(10);
-		System.out.println("remove 5");
-		test.insert(5);
-		System.out.println("remove 1");
-		assertEquals(true, test.remove() == 1);
-		
-		
-	}
+		assertEquals(true, test.root.value == 4);
+		assertEquals(true, test.root.sibling.value == 7);
+		assertEquals(true, test.root.sibling.sibling.value == 13);
+		assertEquals(true, test.root.sibling.sibling.sibling.value == 4);
 
+		assertEquals(true, test.remove() == 4);
+		assertEquals(true, test.root.value == 7);
+		assertEquals(true, test.root.sibling.value == 7);
+		assertEquals(true, test.root.child.value == 13);
+		assertEquals(true, test.root.child.sibling.value == 13);
+		assertNull(test.root.child.child);
+		
+		test.insert(2);
+		assertEquals(true, test.root.value == 2);
+		assertEquals(true, test.root.sibling.value == 7);
+		assertEquals(true, test.root.sibling.sibling.value == 2);
+		assertNull(test.root.child);
+		assertEquals(true, test.root.sibling.child.value == 13);
+		assertEquals(true, test.root.sibling.child.sibling.value == 13);
+		assertNull(test.root.sibling.child.child);
+		
+		test.insert(11);
+		assertEquals(true, test.root.value == 2);
+		assertEquals(true, test.root.sibling.value == 11);
+		assertEquals(true, test.root.sibling.sibling.value == 7);
+		assertEquals(true, test.root.sibling.sibling.sibling.value == 2);
+		assertNull(test.root.child);
+		assertEquals(true, test.root.sibling.sibling.child.value == 13);
+		assertEquals(true, test.root.sibling.sibling.child.sibling.value == 13);
+		assertNull(test.root.sibling.sibling.child.child);
+		
+		test.insert(8);
+		assertEquals(true, test.root.value == 2);
+		assertEquals(true, test.root.sibling.value == 8);
+		assertEquals(true, test.root.sibling.sibling.value == 11);
+		assertEquals(true, test.root.sibling.sibling.sibling.value == 7);
+		assertEquals(true, test.root.sibling.sibling.sibling.sibling.value == 2);
+		assertNull(test.root.child);
+		assertEquals(true, test.root.sibling.sibling.sibling.child.value == 13);
+		assertEquals(true, test.root.sibling.sibling.sibling.child.sibling.value == 13);
+		assertNull(test.root.sibling.sibling.sibling.child.child);
+		
+		assertEquals(true, test.remove() == 2);
+		assertEquals(true, test.root.value == 7);
+		assertEquals(true, test.root.sibling.value == 7);
+		
+		assertEquals(true, test.root.child.value == 13);
+		assertEquals(true, test.root.child.sibling.value == 8);
+		assertEquals(true, test.root.child.sibling.sibling.value == 13);
+		
+		assertEquals(true, test.root.child.sibling.child.value == 11);
+		assertEquals(true, test.root.child.sibling.child.sibling.value == 11);
+		assertNull(test.root.child.sibling.child.child);
+
+		test.insert(1);
+		test.insert(10);
+		test.insert(5);
+		assertEquals(true, test.remove() == 1);		
+		assertEquals(true, test.root.value == 5);
+		assertEquals(true, test.root.sibling.value == 7);
+		assertEquals(true, test.root.sibling.sibling.value == 5);
+		
+		assertEquals(true, test.root.child.value == 10);
+		assertEquals(true, test.root.child.sibling.value == 10);
+		assertNull(test.root.child.child);
+		
+		assertEquals(true, test.root.sibling.child.value == 13);
+		assertEquals(true, test.root.sibling.child.sibling.value == 8);
+		assertEquals(true, test.root.sibling.child.sibling.sibling.value == 13);
+		
+		assertEquals(true, test.root.sibling.child.sibling.child.value == 11);
+		assertEquals(true, test.root.sibling.child.sibling.child.sibling.value == 11);
+	}
 }
