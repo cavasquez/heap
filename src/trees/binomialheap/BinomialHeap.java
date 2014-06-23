@@ -82,8 +82,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	 */
 	protected Node<T> pairwiseCombine(Node<T> node) throws UnequalChildrenException
 	{
-		Node<T> returner = null;
-		History<T> hist = new History<T>(node.sibling, node);
+		History<T> hist = new History<T>(node.sibling, node, null);
 		Node<T> temp = null;
 		Node<T> children = node.child;
 		NodePair<T> comp = null;
@@ -97,7 +96,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 		 * again. Also look for the "winner" */
 		while(hist.current != node)
 		{
-			this.pass(returner, hist, temp, comp, commonDegrees);
+			this.pass(hist, temp, comp, commonDegrees);
 		}
 		
 		/* remove node from the list and make sure it's not in commonDegrees */
@@ -115,10 +114,10 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 		/* Make a final pass with the children */
 		for(int i = 0; i < node.getDegree(); i++)
 		{
-			this.pass(returner, hist, temp, comp, commonDegrees);
+			this.pass(hist, temp, comp, commonDegrees);
 		}
 		
-		return returner;
+		return hist.winning;
 	}
 	
 	/**
@@ -135,14 +134,13 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	 * 						the degree of the index.
 	 * @throws UnequalChildrenException
 	 */
-	protected void pass(Node<T> returner,
-		History<T> hist,
+	protected void pass(History<T> hist,
 		Node<T> temp,
 		NodePair<T> comp,
 		Vector<Node<T>> commonDegrees) throws UnequalChildrenException
 	{
 		/* look for next root */
-		returner = this.compare(hist.current, returner).winner;
+		hist.winning = this.compare(hist.current, hist.winning).winner;
 		this.mergeDegrees(hist, temp, comp, commonDegrees);
 	}
 	
@@ -221,7 +219,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 			this.ensureSize(commonDegrees, comp.winner.getDegree() + 1);
 			if(commonDegrees.get(comp.winner.getDegree()) != null)
 			{
-				this.mergeDegrees(new History<T>(comp.winner, comp.previousWinner), temp, comp, commonDegrees);
+				this.mergeDegrees(new History<T>(comp.winner, comp.previousWinner, null), temp, comp, commonDegrees);
 			}
 			else
 			{
