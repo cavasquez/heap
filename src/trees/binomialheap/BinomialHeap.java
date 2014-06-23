@@ -210,13 +210,11 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 			 * become hist.previous. Set it to the previous of loser */
 			if(hist.current == comp.loser) hist.previous = comp.previousLoser;
 			else hist.previous = hist.current;
+			hist.current = hist.current.sibling;
 			
 			/* remove siblings from loser and make it a child */
 			comp.loser.sibling = comp.loser;
 			comp.winner.addChild(comp.loser);
-			
-			/* Finish progressing history */
-			hist.current = hist.current.sibling;
 			
 			/* Attempt to merge the winner with another node if there exists
 			 * another node of equal degree. If not, insert it into commonDegrees */
