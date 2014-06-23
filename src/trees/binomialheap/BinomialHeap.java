@@ -206,12 +206,16 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 			/* Remove loser from siblings while maintaining the current siblings */
 			comp.previousLoser.sibling = comp.loser.sibling;
 			
+			/* Progress history here. If the loser is hist.current, it cannot
+			 * become hist.previous. Set it to the previous of loser */
+			if(hist.current == comp.loser) hist.previous = comp.previousLoser;
+			else hist.previous = hist.current;
+			
 			/* remove siblings from loser and make it a child */
 			comp.loser.sibling = comp.loser;
 			comp.winner.addChild(comp.loser);
 			
-			/* Progress the history */
-			hist.previous = hist.current;
+			/* Finish progressing history */
 			hist.current = hist.current.sibling;
 			
 			/* Attempt to merge the winner with another node if there exists
