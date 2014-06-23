@@ -55,7 +55,6 @@ public class Node<T extends Comparable<T>>
 	 */
 	public void addChild(Node<T> child) throws UnequalChildrenException
 	{
-		System.out.println("addChild: attempting to add " + child.print() + " to " + this.print());
 		if(this.degree == child.degree)
 		{
 			if(this.child == null) this.child = child;
