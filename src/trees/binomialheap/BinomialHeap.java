@@ -2,8 +2,6 @@ package trees.binomialheap;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Vector;
-
 import trees.HeapInterface;
 
 /**
@@ -90,7 +88,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 		/* common degrees will contain the nodes to the node with a sibling
 		 * to a node that contains a given degree. The degree will act as a
 		 * sort of key. */
-		Vector<Node<T>> commonDegrees = new Vector<Node<T>>();
+		CustomVector<Node<T>> commonDegrees = new CustomVector<Node<T>>(Node<T>.class);
 		
 		/* Start by merging the siblings of node keep going until we hit node
 		 * again. Also look for the "winner" */
@@ -131,8 +129,8 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	 * @param hist			the collection of the current and previous nodes			
 	 * @param temp			a temporary holder
 	 * @param comp			the NodePair used for comparisons
-	 * @param commonDegrees	the vector of nodes by degree. The degree of a node
-	 * 						should act as the index in the vector and the node
+	 * @param commonDegrees	the CustomVector of nodes by degree. The degree of a node
+	 * 						should act as the index in the CustomVector and the node
 	 * 						at the given index should be Node whose sibling has
 	 * 						the degree of the index.
 	 * @throws UnequalChildrenException
@@ -140,7 +138,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	protected void pass(History<T> hist,
 		Node<T> temp,
 		NodePair<T> comp,
-		Vector<Node<T>> commonDegrees) throws UnequalChildrenException
+		CustomVector<Node<T>> commonDegrees) throws UnequalChildrenException
 	{
 		/* look for next root */
 		hist.winning = this.compare(hist.current, hist.winning).winner;
@@ -155,15 +153,15 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	 * appropriately set.
 	 * @param hist			contains the current and previous nodes of the 
 	 * 						current node who is being merged
-	 * @param commonDegrees	the vector of nodes by degree. The degree of a node
-	 * 						should act as the index in the vector and the node
+	 * @param commonDegrees	the CustomVector of nodes by degree. The degree of a node
+	 * 						should act as the index in the CustomVector and the node
 	 * 						at the given index should be Node whose sibling has
 	 * 						the degree of the index.
 	 */
 	public void mergeDegrees(History<T> hist,
 			Node<T> temp,
 			NodePair<T> comp,
-			Vector<Node<T>> commonDegrees) throws UnequalChildrenException
+			CustomVector<Node<T>> commonDegrees) throws UnequalChildrenException
 	{
 		this.ensureSize(commonDegrees, hist.current.getDegree() + 1);
 		if(commonDegrees.get(hist.current.getDegree()) == null)
@@ -234,11 +232,11 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	}
 	
 	/**
-	 * Ensures that the Vector is always of sufficient size
-	 * @param vec	the vector being adjusted
-	 * @param size	the size to which the vector is being adjusted
+	 * Ensures that the CustomVector is always of sufficient size
+	 * @param vec	the CustomVector being adjusted
+	 * @param size	the size to which the CustomVector is being adjusted
 	 */
-	protected void ensureSize(Vector vec, int size)
+	protected void ensureSize(CustomVector vec, int size)
 	{
 		if(vec.size() < size)
 		{
@@ -254,7 +252,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	@Override
 	public String toString()
 	{
-		Vector<StringBuffer> content = new Vector<StringBuffer>();
+		CustomVector<StringBuffer> content = new CustomVector<StringBuffer>(StringBuffer.class);
 		StringBuffer returner = new StringBuffer();
 		this.getString(content, this.root, this.root, 0, true);
 		for(int i = 0; i < content.size(); i++)
@@ -273,7 +271,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	 * @param level			the current level
 	 * @param fromLevelRoot	whether or not this method was started by levelRoot
 	 */
-	protected void getString(Vector<StringBuffer> content, Node<T> current, Node<T> levelRoot, int level, boolean fromLevelRoot)
+	protected void getString(CustomVector<StringBuffer> content, Node<T> current, Node<T> levelRoot, int level, boolean fromLevelRoot)
 	{
 		this.ensureSize(content, level+1);
 		if(content.get(level) == null) content.set(level, new StringBuffer());
