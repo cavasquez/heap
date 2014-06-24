@@ -2,6 +2,7 @@ package trees.binomialheap;
 
 import java.util.LinkedList;
 import java.util.Queue;
+
 import trees.HeapInterface;
 
 /**
@@ -88,7 +89,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 		/* common degrees will contain the nodes to the node with a sibling
 		 * to a node that contains a given degree. The degree will act as a
 		 * sort of key. */
-		CustomVector<Node<T>> commonDegrees = new CustomVector<Node<T>>(Node<T>.class);
+		CustomVector<Node<T>> commonDegrees = new CustomVector<Node<T>>((Class<Node<T>>) node.getClass());
 		
 		/* Start by merging the siblings of node keep going until we hit node
 		 * again. Also look for the "winner" */
@@ -238,11 +239,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	 */
 	protected void ensureSize(CustomVector vec, int size)
 	{
-		if(vec.size() < size)
-		{
-			vec.ensureCapacity(size);
-		    while (vec.size() < size) { vec.add(null); }
-		}
+		vec.ensureSize(size);
 	}
 	
 	/**

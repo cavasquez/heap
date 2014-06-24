@@ -11,13 +11,13 @@ import java.lang.reflect.Array;
 public class CustomVector<T> 
 {
 	private T[] objects;
-	private int size = 10;
+	private int size;
 	private Class<T> c;
 	
 	public CustomVector(Class<T> c)
 	{
 		this.c = c;
-		final T[] arr = (T[]) Array.newInstance(c, size);
+		final T[] arr = (T[]) Array.newInstance(c, 8);
 		this.objects = arr;
 	}
 
@@ -59,19 +59,26 @@ public class CustomVector<T>
 	{
 		if(this.size < requiredSize)
 		{
-			/* Calculate the new size and create the array. */
-			while(this.size < requiredSize)
+			this.size = requiredSize;
+			int temp = objects.length;
+			if(objects.length < requiredSize)
 			{
-				this.size *= 4;
+				
+				/* Calculate the new size and create the array. */
+				while(temp < requiredSize)
+				{
+					temp *= 4;
+				}
+				
+				final T[] arr = (T[]) Array.newInstance(c, temp);
+				/* populate the new array */
+				for(int i = 0; i < this.objects.length; i++)
+				{
+					arr[i] = this.objects[i];
+				}
+				this.objects = arr;
 			}
-			final T[] arr = (T[]) Array.newInstance(c, size);
 			
-			/* populate the new array */
-			for(int i = 0; i < this.objects.length; i++)
-			{
-				arr[i] = this.objects[i];
-			}
-			this.objects = arr;
 		}
 	}
 	
