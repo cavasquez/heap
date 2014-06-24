@@ -259,7 +259,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 		this.getString(content, this.root, this.root, 0, true);
 		for(int i = 0; i < content.size(); i++)
 		{
-			returner.append("Level " + (i+1) + ":[" + content.get(i).substring(0, content.get(i).length()) + "]");
+			returner.append("Level " + (i+1) + ":[" + content.get(i).substring(0, content.get(i).length()-1) + "]\n");
 		}
 		return returner.toString();
 	}
@@ -276,9 +276,13 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	protected void getString(Vector<StringBuffer> content, Node<T> current, Node<T> levelRoot, int level, boolean fromLevelRoot)
 	{
 		this.ensureSize(content, level+1);
-		content.get(level).append(current.getValue().toString());
-		content.get(level).append(",");
-		this.getString(content, current.child, current.child, level+1, true);
-		if(current != levelRoot || fromLevelRoot) this.getString(content, current.sibling, levelRoot, level, false);
+		if(content.get(level) == null) content.set(level, new StringBuffer());
+		if(current != levelRoot || fromLevelRoot)
+		{
+			content.get(level).append(current.getValue().toString());
+			content.get(level).append(",");
+			if(current.child != null ) this.getString(content, current.child, current.child, level+1, true);
+			if(current != levelRoot || fromLevelRoot) this.getString(content, current.sibling, levelRoot, level, false);
+		}		
 	}
 }

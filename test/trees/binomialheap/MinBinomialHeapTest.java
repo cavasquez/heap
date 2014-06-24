@@ -93,5 +93,7 @@ public class MinBinomialHeapTest
 		
 		assertEquals(true, test.root.sibling.child.sibling.child.value == 11);
 		assertEquals(true, test.root.sibling.child.sibling.child.sibling.value == 11);
+		
+		System.out.println(test.toString());
 	}
 }
