@@ -1,5 +1,7 @@
 package trees.leftisttree;
 
+import java.util.Vector;
+
 import trees.HeapInterface;
 
 /**
@@ -15,6 +17,8 @@ public abstract class LeftistTree<T extends Comparable<T>> implements HeapInterf
 	{
 		this.root = root;
 	}
+	
+	public LeftistTree() { this(null); }
 	
 	/**
 	 * Compare will be implemented by the subclass of LeftistTree and used to
@@ -120,6 +124,46 @@ public abstract class LeftistTree<T extends Comparable<T>> implements HeapInterf
 			Node<T> temp = tree.rightChild;
 			tree.rightChild = tree.leftChild;
 			tree.leftChild = temp;
+		}
+	}
+	
+	@Override
+	public String toString()
+	{
+		Vector<StringBuffer> content = new Vector<StringBuffer>();
+		StringBuffer returner = new StringBuffer();
+		this.getString(content, this.root, 0);
+		for(int i = 0; i < content.size(); i++)
+		{
+			returner.append("Level " + (i+1) + ":[" + content.get(i).substring(0, content.get(i).length()-1) + "]\n");
+		}
+		return returner.toString();
+	}
+	
+	protected void getString(Vector<StringBuffer> content, Node<T> node, int level)
+	{
+		if(node != null)
+		{
+			this.ensureSize(content, level + 1);
+			if(content.get(level) == null) content.set(level, new StringBuffer());
+			content.get(level).append(node.value.toString());
+			content.get(level).append(",");
+			this.getString(content, node.leftChild, level + 1);
+			this.getString(content, node.rightChild, level + 1);
+		}
+	}
+	
+	/**
+	 * Ensures that the Vector is always of sufficient size
+	 * @param vec	the vector being adjusted
+	 * @param size	the size to which the vector is being adjusted
+	 */
+	protected void ensureSize(Vector vec, int size)
+	{
+		if(vec.size() < size)
+		{
+			vec.ensureCapacity(size);
+		    while (vec.size() < size) { vec.add(null); }
 		}
 	}
 }

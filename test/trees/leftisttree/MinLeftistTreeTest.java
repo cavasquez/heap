@@ -51,6 +51,8 @@ public class MinLeftistTreeTest
 		
 		assertNull(test.root.rightChild.leftChild);
 		assertNull(test.root.rightChild.rightChild);
+		
+		System.out.println(test.toString());
 	}
 
 	@Test
