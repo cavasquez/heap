@@ -1,8 +1,5 @@
 package trees.binomialheap;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
 import trees.HeapInterface;
 
 /**
@@ -262,7 +259,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	/**
 	 * /**
 	 * Puts a string representation of node into content divided by "level"
-	 * @param content		the holer that keeps track of the strings
+	 * @param content		the holder that keeps track of the strings
 	 * @param current		the current node being parsed
 	 * @param levelRoot		the node pointed to by the parent
 	 * @param level			the current level
