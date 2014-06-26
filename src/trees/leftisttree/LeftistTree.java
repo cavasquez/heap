@@ -49,11 +49,16 @@ public abstract class LeftistTree<T extends Comparable<T>> implements HeapInterf
 	
 	/**
 	 * Removes the root element and merges the children to obtain a new root.
+	 * If the root is null, this method returns null.
 	 */
 	public final T remove()
 	{
-		T returner = this.root.getValue();
-		this.root = this.merge(this.root.leftChild, this.root.rightChild);
+		T returner = null;
+		if(this.root != null)
+		{
+			returner = this.root.getValue();
+			this.root = this.merge(this.root.leftChild, this.root.rightChild);
+		}
 		return returner;
 	}
 	
