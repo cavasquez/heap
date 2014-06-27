@@ -64,7 +64,6 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	public T remove()
 	{
 		T returner = null;
-		//Node<T> temp = this.root;
 		
 		if(this.root != null)
 		{
@@ -176,7 +175,9 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 			{
 				/* Another node with common degree has been found. Merge the two
 				 * and remove the loser from the list. */
+				commonDegrees.set(cont.current.val.getDegree(), null);
 				NodePair<T> comp = this.compare(cont.current.val, cont.current, temp.val, temp);
+				
 				
 				/* Remove the loser from the list */
 				comp.loserHolder.left.right = comp.loserHolder.right;
