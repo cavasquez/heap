@@ -4,6 +4,10 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import trees.HeapInterface;
+import trees.binomialheap.MinBinomialHeap;
+import trees.leftisttree.MinLeftistTree;
+
 /**
  * Test cases for the heap class.
  * @author Carlos Vasquez
@@ -43,6 +47,10 @@ public class heapTest
 	@Test
 	public void testInput()
 	{
+		HeapInterface<Integer> test = new MinLeftistTree<Integer>();
+		heap.input(test, "test.txt");
 		
+		test = new MinBinomialHeap<Integer>();
+		heap.input(test, "test.txt");
 	}
 }

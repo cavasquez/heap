@@ -107,7 +107,7 @@ public class heap
 		}
 		
 		/* Print report: */
-		System.out.println("Average cost per operation:");
+		System.out.println("Average cost per operation (in milliseconds):");
 		String out = "tree\t";
 		for(int i = 0; i < test.length; i++) out += (test[i] + "\t");
 		System.out.println(out);
@@ -167,20 +167,24 @@ public class heap
 	/**
 	 * Reads the file and performs the operations in the file on the tree. 
 	 * @param tree	the tree on which the operations on being performed
-	 * @param file	the file with the list of operations
+	 * @param path	the path to the file with the list of operations
 	 */
-	public static void input(HeapInterface<Integer> tree, String file)
+	public static void input(HeapInterface<Integer> tree, String path)
 	{
+		FileReader file = null;
 		BufferedReader reader = null;
 		try 
 		{ 
 			String in = ""; 
-			reader = new BufferedReader(new FileReader(file));
+			String[] token = null;
+			file = new FileReader(path);
+			reader = new BufferedReader(file);
  
-			while ((in = reader.readLine()) != null || in.equals("*")) 
+			while ((in = reader.readLine()) != null && !in.equals("*")) 
 			{
-				if(in.equals("I")) tree.insert(Integer.parseInt(reader.readLine()));
-				else if(in.equals("D")) tree.remove();
+				token = in.split(" ");
+				if(token[0].equals("I")) tree.insert(Integer.parseInt(token[1]));
+				else if(token[0].equals("D")) tree.remove();
 			}
 		} 
 		catch (IOException e) { e.printStackTrace(); } 
