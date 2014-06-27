@@ -1,5 +1,10 @@
 package heap;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.Random;
 
 import trees.HeapInterface;
@@ -17,11 +22,11 @@ public class heap
 	{
 		switch(args[0])
 		{
-			case"-r":
+			case"-r": heap.random(5, 5000);
 			break;
-			case "-il":
+			case "-il": heap.input(new MinLeftistTree<Integer>(), args[1]);
 			break;
-			case "-ib":
+			case "-ib": heap.input(new MinBinomialHeap<Integer>(), args[1]);
 			break;
 			default: System.out.println("Invalid command. Valid commands are: -r, -il {file}, -ib {file}");
 		}
@@ -36,12 +41,11 @@ public class heap
 	 * average the time between them.
 	 * @param reps	the number of repetitions
 	 */
-	protected void random(int reps, int m)
+	protected static void random(int reps, int m)
 	{
 		int MIN_LEFTIST_TREE = 0;
 		int MIN_BINOMIAL_HEAP = 1;
 		
-		int[] n = new int[5000];
 		long[][] results = new long[2][7];
 		int[] test = new int[7];
 		test[0] = 100;
@@ -154,5 +158,33 @@ public class heap
 			ops[i] = Instruction.makeInstruction(gen.nextInt() % 2, Math.abs(gen.nextInt()));
 		}
 		return ops;
+	}
+	
+	/**
+	 * Reads the file and performs the operations in the file on the tree. 
+	 * @param tree	the tree on which the operations on being performed
+	 * @param file	the file with the list of operations
+	 */
+	public static void input(HeapInterface<Integer> tree, String file)
+	{
+		BufferedReader reader = null;
+		try 
+		{ 
+			String in = ""; 
+			reader = new BufferedReader(new FileReader(file));
+ 
+			while ((in = reader.readLine()) != null || in.equals("*")) 
+			{
+				if(in.equals("I")) tree.insert(Integer.parseInt(reader.readLine()));
+				else if(in.equals("D")) tree.remove();
+			}
+		} 
+		catch (IOException e) { e.printStackTrace(); } 
+		finally 
+		{
+			try { if(reader != null) reader.close(); } 
+			catch (IOException ex) { ex.printStackTrace(); }
+			System.out.println(tree.toString());
+		}
 	}
 }
