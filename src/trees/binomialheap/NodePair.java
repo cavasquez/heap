@@ -3,7 +3,8 @@ package trees.binomialheap;
 import trees.binomialheap.Node;
 
 /**
- * A Helper class for BinomialHeap.
+ * A Helper class for BinomialHeap. This data structure is used to return the
+ * results of a comparison.
  * @author Carlos Vasquez
  *
  * @param <T> Generic Type

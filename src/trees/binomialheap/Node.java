@@ -65,6 +65,10 @@ public class Node<T extends Comparable<T>>
 		else throw new UnequalChildrenException(this + " and " + child + " have unequal children (" + this.degree + "," + child.degree + ")");
 	}
 	
+	/**
+	 * Returns a string that contains the value and degree of this node.
+	 * @return	a string that contains the value and degree of this node.
+	 */
 	public String print()
 	{
 		return ("(" + this.value + "," + this.degree + ")");

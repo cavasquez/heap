@@ -1,7 +1,10 @@
 package trees;
 
 /**
- * HeapInterface defines the methods that any Heap must support.
+ * HeapInterface defines the methods that any Heap must support. These methods
+ * are as follows:
+ * void insert(T value)
+ * T	remove()
  * @author Carlos Vasquez
  *
  */

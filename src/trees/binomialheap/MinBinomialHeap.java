@@ -1,5 +1,12 @@
 package trees.binomialheap;
 
+/**
+ * MinBinomialHeap extends BinomialHeap and defines the compare to set the 
+ * winner node to be the node with a value less than the opposing node. 
+ * @author Carlos Vasquez
+ *
+ * @param <T> a generic type
+ */
 public class MinBinomialHeap<T extends Comparable<T>> extends BinomialHeap<T>
 {
 

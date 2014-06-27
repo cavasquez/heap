@@ -3,6 +3,8 @@ package trees.binomialheap;
 import java.lang.reflect.Array;
 
 /**
+ * This class acts as a vector for the purposes of this project.
+ * 
  * Used http://stackoverflow.com/questions/529085/how-to-generic-array-creation
  * to deal with generic array
  * @author Carlos Vasquez

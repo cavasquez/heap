@@ -12,7 +12,13 @@ import trees.binomialheap.MinBinomialHeap;
 import trees.leftisttree.MinLeftistTree;
 
 /**
- * Heap is the driver class for the heap project.
+ * Heap is the driver class for the heap project. It will take in 3 commands:
+ * -r: this perform a stress test on MinLeftistTree and MinBinomialHeap and 
+ * print the average cost of operations for each.
+ * -il {file}: performs the operations on a MinLeftistTree as designated by the
+ * file and prints the resulting tree.
+ * -ib {file}: performs the operations on a MinBinomialHeap as designated by the
+ * file and prints the resulting heap.
  * @author Carlos Vasquez
  *
  */
