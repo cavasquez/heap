@@ -14,6 +14,10 @@ public class heapTest
 	public void testRandom() 
 	{
 		heap.random(1, 1000);
+		System.out.println("\n");
+		heap.random(1, 5000);
+		System.out.println("\n");
+		heap.random(5, 5000);
 	}
 	
 	@Test
