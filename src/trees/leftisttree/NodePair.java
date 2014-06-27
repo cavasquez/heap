@@ -1,7 +1,8 @@
 package trees.leftisttree;
 
 /**
- * A Helper class for LeftistTree.
+ * A Helper class for LeftistTree. This data structure is used to return the
+ * results of a comparison.
  * @author Carlos Vasquez
  *
  * @param <T> Generic Type

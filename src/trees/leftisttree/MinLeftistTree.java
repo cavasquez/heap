@@ -1,8 +1,8 @@
 package trees.leftisttree;
 
 /**
- * A Minimum LeftistTree. In this data structure, the smaller elements are
- * at the higher levels (closer to the root).
+ * MinLeftistTree extends LeftistTree and defines the compare to set the 
+ * winner node to be the node with a value less than the opposing node. 
  * @author Carlos Vasquez
  *
  * @param <T> Generic Type

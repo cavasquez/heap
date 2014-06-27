@@ -5,7 +5,8 @@ import java.util.Vector;
 import trees.HeapInterface;
 
 /**
- * LeftistTree defines the methods and attributes used by a LeftistTree.
+ * LeftistTree defines the methods and attributes used by a LeftistTree. 
+ * LeftistTree will be extended to make a MinLeftistTree or MaxLeftistTree.
  * @author Carlos Vasquez
  *
  */
@@ -29,7 +30,7 @@ public abstract class LeftistTree<T extends Comparable<T>> implements HeapInterf
 	 * level in the tree than the loser node.
 	 * @param node1	the node to be compared to node2
 	 * @param node2	the node to be compared to node1
-	 * @return	the NodePair determining the "winner" and "loser" nodes.
+	 * @return		the NodePair determining the "winner" and "loser" nodes.
 	 */
 	protected abstract NodePair<T> compare(Node<T> node1, Node<T> node2);
 	
@@ -42,6 +43,7 @@ public abstract class LeftistTree<T extends Comparable<T>> implements HeapInterf
 		this.root = this.merge(this.root, node);
 	}
 	
+	@Override
 	public void insert(T value)
 	{
 		this.insert(new Node<T>(value));
@@ -51,6 +53,7 @@ public abstract class LeftistTree<T extends Comparable<T>> implements HeapInterf
 	 * Removes the root element and merges the children to obtain a new root.
 	 * If the root is null, this method returns null.
 	 */
+	@Override
 	public final T remove()
 	{
 		T returner = null;
@@ -132,6 +135,12 @@ public abstract class LeftistTree<T extends Comparable<T>> implements HeapInterf
 		}
 	}
 	
+	/**
+	 * Returns a string representation of LeftistTree. Although the project
+	 * specification states that no outside data structures should be used, this
+	 * method uses a Vector simply because this is an insignificant method and
+	 * it does not impact the performance of LefristTree.
+	 */
 	@Override
 	public String toString()
 	{
@@ -145,6 +154,13 @@ public abstract class LeftistTree<T extends Comparable<T>> implements HeapInterf
 		return returner.toString();
 	}
 	
+	/**
+	 * This method is used by toString to help build a string representation of
+	 * a node. This method recursively calls the children node of node. 
+	 * @param content	the vector with the StringBuffer for each level.
+	 * @param node		the node for which the string is being built
+	 * @param level		the current level the method is at
+	 */
 	protected void getString(Vector<StringBuffer> content, Node<T> node, int level)
 	{
 		if(node != null)
