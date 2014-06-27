@@ -103,8 +103,16 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 		
 		/* remove node from the list and make sure it's not in commonDegrees */
 		this.ensureSize(commonDegrees, node.sibling.getDegree() + 1);
+		boolean findPrev = false;
 		if(commonDegrees.get(node.sibling.getDegree()) == node)
 		{
+			/* If the previous node of node.sibling.degree is the same as
+			 * hist.previous, then the commonDegree at node.sibling.degree will
+			 * point to itself. This is an issue because if a sibling is added
+			 * to hist.previous, then commonDegrees will incorrectly point to
+			 * the wrong "previous" node. Set a flag to find the new "previous"
+			 * node */
+			if(node.sibling == hist.previous) findPrev = true; 
 			commonDegrees.set(node.sibling.getDegree(), hist.previous);
 		}
 		hist.previous.sibling = node.sibling;
@@ -114,7 +122,16 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 		{
 			hist.previous.addSibling(children);
 			hist.current = hist.previous.sibling;
-			
+		
+			/* Check if we need to find the "previous" node for 
+			 * node.sibling.getDegree() */
+			if(findPrev)
+			{
+				Node<T> offender = commonDegrees.get(node.sibling.getDegree());
+				Node<T> prevDegree = offender.sibling;
+				while(prevDegree.sibling != offender) { prevDegree = prevDegree.sibling; }
+				commonDegrees.set(node.sibling.getDegree(), prevDegree);
+			}
 			/* Make a final pass with the children */
 			for(int i = 0; i < node.getDegree(); i++)
 			{
@@ -204,8 +221,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 				 * commonDegrees. 
 				 * The modification of commons previous to point to commons 
 				 * sibling will occur later (as it had to anyways) */
-				Node<T> previousCommon = commonDegrees.get(common.getDegree());
-				commonDegrees.set(common.sibling.getDegree(), previousCommon);
+				commonDegrees.set(common.sibling.getDegree(), comp.previousLoser);
 			}
 			
 			/* Remove loser from siblings while maintaining the current siblings */

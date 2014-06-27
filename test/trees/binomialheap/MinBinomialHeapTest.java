@@ -95,6 +95,20 @@ public class MinBinomialHeapTest
 		assertEquals(true, test.root.sibling.child.sibling.child.sibling.value == 11);
 		
 		System.out.println(test.toString());
+		
+		assertEquals(true, test.remove().equals(5));
+		assertEquals(true, test.remove().equals(7));
+		assertEquals(true, test.remove().equals(8));
+		assertEquals(true, test.remove().equals(10));
+		assertEquals(true, test.remove().equals(11));
+		assertEquals(true, test.remove().equals(13));
+		assertNull(test.remove());
+	}
+	
+	@Test
+	public void stressTest2()
+	{
+		
 	}
 	
 	@Test

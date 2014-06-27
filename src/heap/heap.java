@@ -155,7 +155,7 @@ public class heap
 		Random gen = new Random();
 		for(int i = 0; i < m; i++)
 		{
-			ops[i] = Instruction.makeInstruction(gen.nextInt() % 2, Math.abs(gen.nextInt()));
+			ops[i] = Instruction.makeInstruction(Math.abs(gen.nextInt()) % 2, Math.abs(gen.nextInt()));
 		}
 		return ops;
 	}
