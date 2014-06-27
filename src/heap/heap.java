@@ -112,15 +112,16 @@ public class heap
 		for(int i = 0; i < test.length; i++) out += (test[i] + "\t");
 		System.out.println(out);
 		
-		for(int i = 0; i < reps; i++)
+		for(int i = 0; i < 2; i++)
 		{
-			for(int j = 0; j < 2; j++)
-			{
-				if(j == MIN_LEFTIST_TREE) out = "MinLeftistTree\t";
-				else if(j == MIN_BINOMIAL_HEAP) out = "MinBinomialHeap";
-				out += ((results[j][i] / (m * reps)) + "\t");
-				System.out.println(out);
+			if(i == MIN_LEFTIST_TREE) out = "MinLeftistTree\t";
+			else if(i == MIN_BINOMIAL_HEAP) out = "MinBinomialHeap\t";
+			for(int j = 0; j < 7; j++)
+			{				
+				out += ((results[i][j] / (m * reps)) + "\t");
+				
 			}
+			System.out.println(out);
 		}
 	}
 	
