@@ -173,11 +173,15 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 			}
 			else
 			{
+				/* Remove the element from commonDegrees now that it will be
+				 * merged and no longer have the previous degree or become a 
+				 * child of another node and so it should not be merged with 
+				 * another node. */
+				commonDegrees.set(cont.current.val.getDegree(), null);
+				
 				/* Another node with common degree has been found. Merge the two
 				 * and remove the loser from the list. */
-				commonDegrees.set(cont.current.val.getDegree(), null);
 				NodePair<T> comp = this.compare(cont.current.val, cont.current, temp.val, temp);
-				
 				
 				/* Remove the loser from the list */
 				comp.loserHolder.left.right = comp.loserHolder.right;
@@ -191,12 +195,10 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 				commonDegrees.ensureSize(comp.winner.getDegree() + 1);
 				temp = commonDegrees.get(comp.winner.getDegree());
 				if(temp != null) this.mergeDegrees(new Container<T>(null, comp.winnerHolder), commonDegrees);
-				else
-				{
-					/* Set the common degree and progress */
-					commonDegrees.set(comp.winner.getDegree(), comp.winnerHolder);
-					cont.current = cont.current.right;
-				}
+				/* Set the common degree */
+				else commonDegrees.set(comp.winner.getDegree(), comp.winnerHolder);
+				/* Progress */
+				cont.current = cont.current.right;
 			}
 		}
 	
