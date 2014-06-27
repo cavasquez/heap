@@ -11,15 +11,18 @@ import trees.binomialheap.Node;
 public class NodePair<T extends Comparable<T>> 
 {
 	public final Node<T> winner;
-	public final Node<T> previousWinner;
+	public final DoublyLinkedList<Node<T>> winnerHolder;
 	public final Node<T> loser;
-	public final Node<T> previousLoser;
+	public final DoublyLinkedList<Node<T>> loserHolder;
 	
-	public NodePair(Node<T> winner, Node<T> previousWinner, Node<T> loser, Node<T> previousLoser)
+	public NodePair(Node<T> winner, 
+			DoublyLinkedList<Node<T>> winnerHolder, 
+			Node<T> loser, 
+			DoublyLinkedList<Node<T>> loserHolder)
 	{
 		this.winner = winner;
-		this.previousWinner = previousWinner;
+		this.winnerHolder = winnerHolder;
 		this.loser = loser;
-		this.previousLoser = previousLoser;
+		this.loserHolder = loserHolder;
 	}
 }

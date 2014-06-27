@@ -8,10 +8,10 @@ package trees.binomialheap;
  */
 public class Container<T extends Comparable<T>> 
 {
-	public Node<T> winning;
+	public DoublyLinkedList<Node<T>> winning;
 	public DoublyLinkedList<Node<T>> current;
 	
-	public Container(Node<T> winning, DoublyLinkedList<Node<T>> current) 
+	public Container(DoublyLinkedList<Node<T>> winning, DoublyLinkedList<Node<T>> current) 
 	{ 
 		this.winning = winning;
 		this.current = current;

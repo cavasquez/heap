@@ -30,7 +30,10 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	 * @return	the NodePair determining the "winner" and "loser" nodes.
 	 */
 	protected abstract NodePair<T> compare(Node<T> node1, Node<T> node2);
-	protected abstract NodePair<T> compare(Node<T> node1, Node<T> prevNode1, Node<T> node2, Node<T> prevNode2);
+	protected abstract NodePair<T> compare(Node<T> node1, 
+			DoublyLinkedList<Node<T>> node1Holder, 
+			Node<T> node2, 
+			DoublyLinkedList<Node<T>> node2Holder);
 	
 	public void insert(T value)
 	{
@@ -79,7 +82,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	
 	protected Node<T> pairwiseCombineCorrect(Node<T> node) throws UnequalChildrenException
 	{
-		DoublyLinkedList<Node<T>> first = new DoublyLinkedList<Node<T>>(this.root.sibling);
+		DoublyLinkedList<Node<T>> first = new DoublyLinkedList<Node<T>>(this.root);
 		
 		CustomVector<DoublyLinkedList<Node<T>>> commonDegrees = 
 				new CustomVector<DoublyLinkedList<Node<T>>>((Class<DoublyLinkedList<Node<T>>>) first.getClass());
@@ -87,7 +90,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 		/* Initialize list */
 		DoublyLinkedList<Node<T>> current;
 		DoublyLinkedList<Node<T>> previous = first;
-		Node<T> next = this.root.sibling.sibling;
+		Node<T> next = this.root.sibling;
 		
 		/* Start with siblings */
 		while(next != this.root)
@@ -116,20 +119,73 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 		current = first;
 		
 		/* Now combine the elements */
+		Container<T> cont = new Container<T>(null, current);
 		do
 		{
-			this.pass(new Container(null, current), commonDegrees);
+			this.pass(cont, commonDegrees);
+		}while(cont.current != first);
+		
+		/* Combine the nodes the list and remove the root */
+		current = first.right;
+		/* Remove the root */
+		first.left.right = first.right;
+		first.right.left = first.left;
+		first = current;
+		
+		/* Combine the list */
+		do
+		{
+			current.val.sibling = current.right.val;
+			current = current.right;
 		}while(current != first);
 		
-		return null;
+		return cont.winning.val;
 	}
 	
 	protected void pass(Container<T> cont,
 			CustomVector<DoublyLinkedList<Node<T>>> commonDegrees) throws UnequalChildrenException
 		{
 			/* look for next root */
-			cont.winning = this.compare(current.val, cont.winning).winner;
-			this.mergeDegrees(hist, temp, comp, commonDegrees);
+			cont.winning = this.compare(cont.current.val, cont.current, cont.winning.val, cont.winning).winnerHolder;
+			this.mergeDegrees(cont, commonDegrees);
+		}
+	
+	protected void mergeDegrees(Container<T> cont,
+			CustomVector<DoublyLinkedList<Node<T>>> commonDegrees) throws UnequalChildrenException
+		{
+			commonDegrees.ensureSize(cont.current.val.getDegree() + 1);
+			DoublyLinkedList<Node<T>> temp = commonDegrees.get(cont.current.val.getDegree());
+			if(temp == null)
+			{
+				/* No other node with matching degree found. Set current 
+				 * DoublyLinkedList to commonDegree at the position dictated by
+				 * cont.current.val.getDegree() and progress */  
+				commonDegrees.set(cont.current.val.getDegree(), cont.current);
+				cont.current = cont.current.right;
+			}
+			else
+			{
+				/* Another node with common degree has been found. Merge the two
+				 * and remove the loser from the list. */
+				NodePair<T> comp = this.compare(cont.winning.val, cont.winning, temp.val, temp);
+				
+				/* Remove the loser from the list */
+				comp.loserHolder.left.right = comp.loserHolder.right;
+				comp.loserHolder.right.left = comp.loserHolder.left;
+				
+				/* Merge the winner node with the loser node. When the loser
+				 * becomes a child, it's siblings are stripped from it. */
+				comp.winner.addChild(comp.loser);
+				
+				/* Check to see if there are any more merges that can be done */
+				commonDegrees.ensureSize(comp.winner.getDegree() + 1);
+				temp = commonDegrees.get(comp.winner.getDegree());
+				if(temp != null) this.mergeDegrees(new Container<T>(null, comp.winnerHolder), commonDegrees);
+				else commonDegrees.set(comp.winner.getDegree(), comp.winnerHolder);				
+			}
+			
+			/* Progress to the next element */
+			cont.current = cont.current.right;
 		}
 	
 	/**
@@ -239,89 +295,89 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 			NodePair<T> comp,
 			CustomVector<Node<T>> commonDegrees) throws UnequalChildrenException
 	{
-		this.ensureSize(commonDegrees, hist.current.getDegree() + 1);
-		if(commonDegrees.get(hist.current.getDegree()) == null)
-		{
-			/* No other node with matching degree found. Add previous node to 
-			 * commonDegrees and then set new pointers for current and previous. */
-			commonDegrees.set(hist.current.getDegree(), hist.previous);
-			hist.previous = hist.current;
-			hist.current = hist.current.sibling;
-		}
-		else if(commonDegrees.get(hist.current.getDegree()) != hist.current) // this if should never be false
-		{
-			Node<T> common = null;
-			temp = commonDegrees.get(hist.current.getDegree());
-			boolean findPrev = false;
-			
-			/* remove the common degree from list and merge it with its 
-			 * common degree according to the comparator */
-			commonDegrees.set(hist.current.getDegree(), null);
-			comp = this.compare(hist.current, hist.previous, temp.sibling, temp);
-			
-			/* Before removing the common degree from the list, ensure that the
-			 * node with the common degree is not also a "previous" pointer for
-			 * another element in the list if common is used, it is possible 
-			 * that it may become a child of another node. If it does become 
-			 * the child of another node and still exists in commonDegree, it 
-			 * will incorrectly point to the wrong in the list of siblings. It 
-			 * will only become the child of another node if it is the "loser" 
-			 * from compare(). */
-			common = temp.sibling;
-			this.ensureSize(commonDegrees, common.sibling.getDegree() + 1);
-			if(commonDegrees.get(common.sibling.getDegree()) == common &&
-				common == comp.loser)
-			{
-				/* If the previous node of node.sibling.degree is the same as
-				 * hist.previous, then the commonDegree at node.sibling.degree will
-				 * point to itself. This is an issue because if a sibling is added
-				 * to hist.previous, then commonDegrees will incorrectly point to
-				 * the wrong "previous" node. Set a flag to find the new "previous"
-				 * node */
-				if(common.sibling == comp.previousLoser) findPrev = true; 
-				
-				/* Replace common with its "previous" in commonDegrees, which
-				 * can be obtained by looking for the common's degree in 
-				 * commonDegrees. 
-				 * The modification of commons previous to point to commons 
-				 * sibling will occur later (as it had to anyways) */
-				commonDegrees.set(common.sibling.getDegree(), comp.previousLoser);
-			}
-			
-			/* Remove loser from siblings while maintaining the current siblings */
-			comp.previousLoser.sibling = comp.loser.sibling;
-			
-			/* Progress history here. If the loser is hist.current, it cannot
-			 * become hist.previous. Set it to the previous of loser */
-			if(hist.current == comp.loser) hist.previous = comp.previousLoser;
-			else hist.previous = hist.current;
-			hist.current = hist.current.sibling;
-			
-			/* remove siblings from loser and make it a child */
-			comp.loser.sibling = comp.loser;
-			comp.winner.addChild(comp.loser);
-			
-			/* Now, fix previous */
-			if(findPrev)
-			{
-				Node<T> offender = commonDegrees.get(common.sibling.getDegree());
-				Node<T> prevDegree = offender.sibling;
-				while(prevDegree.sibling != offender) { prevDegree = prevDegree.sibling; }
-				commonDegrees.set(common.sibling.getDegree(), prevDegree);
-			}
-			
-			/* Attempt to merge the winner with another node if there exists
-			 * another node of equal degree. If not, insert it into commonDegrees */
-			this.ensureSize(commonDegrees, comp.winner.getDegree() + 1);
-			if(commonDegrees.get(comp.winner.getDegree()) != null)
-			{
-				this.mergeDegrees(new History<T>(comp.winner, comp.previousWinner, null), temp, comp, commonDegrees);
-			}
-			else
-			{
-				commonDegrees.set(comp.winner.getDegree(), comp.previousWinner);
-			}
-		}
+//		this.ensureSize(commonDegrees, hist.current.getDegree() + 1);
+//		if(commonDegrees.get(hist.current.getDegree()) == null)
+//		{
+//			/* No other node with matching degree found. Add previous node to 
+//			 * commonDegrees and then set new pointers for current and previous. */
+//			commonDegrees.set(hist.current.getDegree(), hist.previous);
+//			hist.previous = hist.current;
+//			hist.current = hist.current.sibling;
+//		}
+//		else if(commonDegrees.get(hist.current.getDegree()) != hist.current) // this if should never be false
+//		{
+//			Node<T> common = null;
+//			temp = commonDegrees.get(hist.current.getDegree());
+//			boolean findPrev = false;
+//			
+//			/* remove the common degree from list and merge it with its 
+//			 * common degree according to the comparator */
+//			commonDegrees.set(hist.current.getDegree(), null);
+//			comp = this.compare(hist.current, hist.previous, temp.sibling, temp);
+//			
+//			/* Before removing the common degree from the list, ensure that the
+//			 * node with the common degree is not also a "previous" pointer for
+//			 * another element in the list if common is used, it is possible 
+//			 * that it may become a child of another node. If it does become 
+//			 * the child of another node and still exists in commonDegree, it 
+//			 * will incorrectly point to the wrong in the list of siblings. It 
+//			 * will only become the child of another node if it is the "loser" 
+//			 * from compare(). */
+//			common = temp.sibling;
+//			this.ensureSize(commonDegrees, common.sibling.getDegree() + 1);
+//			if(commonDegrees.get(common.sibling.getDegree()) == common &&
+//				common == comp.loser)
+//			{
+//				/* If the previous node of node.sibling.degree is the same as
+//				 * hist.previous, then the commonDegree at node.sibling.degree will
+//				 * point to itself. This is an issue because if a sibling is added
+//				 * to hist.previous, then commonDegrees will incorrectly point to
+//				 * the wrong "previous" node. Set a flag to find the new "previous"
+//				 * node */
+//				if(common.sibling == comp.previousLoser) findPrev = true; 
+//				
+//				/* Replace common with its "previous" in commonDegrees, which
+//				 * can be obtained by looking for the common's degree in 
+//				 * commonDegrees. 
+//				 * The modification of commons previous to point to commons 
+//				 * sibling will occur later (as it had to anyways) */
+//				commonDegrees.set(common.sibling.getDegree(), comp.previousLoser);
+//			}
+//			
+//			/* Remove loser from siblings while maintaining the current siblings */
+//			comp.previousLoser.sibling = comp.loser.sibling;
+//			
+//			/* Progress history here. If the loser is hist.current, it cannot
+//			 * become hist.previous. Set it to the previous of loser */
+//			if(hist.current == comp.loser) hist.previous = comp.previousLoser;
+//			else hist.previous = hist.current;
+//			hist.current = hist.current.sibling;
+//			
+//			/* remove siblings from loser and make it a child */
+//			comp.loser.sibling = comp.loser;
+//			comp.winner.addChild(comp.loser);
+//			
+//			/* Now, fix previous */
+//			if(findPrev)
+//			{
+//				Node<T> offender = commonDegrees.get(common.sibling.getDegree());
+//				Node<T> prevDegree = offender.sibling;
+//				while(prevDegree.sibling != offender) { prevDegree = prevDegree.sibling; }
+//				commonDegrees.set(common.sibling.getDegree(), prevDegree);
+//			}
+//			
+//			/* Attempt to merge the winner with another node if there exists
+//			 * another node of equal degree. If not, insert it into commonDegrees */
+//			this.ensureSize(commonDegrees, comp.winner.getDegree() + 1);
+//			if(commonDegrees.get(comp.winner.getDegree()) != null)
+//			{
+//				this.mergeDegrees(new History<T>(comp.winner, comp.previousWinner, null), temp, comp, commonDegrees);
+//			}
+//			else
+//			{
+//				commonDegrees.set(comp.winner.getDegree(), comp.previousWinner);
+//			}
+//		}
 	}
 	
 	/**
