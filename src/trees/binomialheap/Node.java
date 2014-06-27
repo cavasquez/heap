@@ -47,7 +47,7 @@ public class Node<T extends Comparable<T>>
 	 * child has a degree that is equal to the degree of this object. If they
 	 * are unequal, then this method will throw an UnequalChildrenException. 
 	 * A BinomialTree can only become a child of another BinomialTree of an
-	 * equal degree.
+	 * equal degree. This method also strips the sibling from the child.
 	 * 
 	 * The child is added "before" the current child. 
 	 * @param child	the child being added to this node.
@@ -57,12 +57,9 @@ public class Node<T extends Comparable<T>>
 	{
 		if(this.degree == child.degree)
 		{
+			child.sibling = child;
 			if(this.child == null) this.child = child;
-			else
-			{
-				child.sibling = child;
-				this.child.addSibling(child);
-			}
+			else { this.child.addSibling(child); }
 			this.degree++;
 		}
 		else throw new UnequalChildrenException(this + " and " + child + " have unequal children (" + this.degree + "," + child.degree + ")");

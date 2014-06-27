@@ -176,7 +176,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 			{
 				/* Another node with common degree has been found. Merge the two
 				 * and remove the loser from the list. */
-				NodePair<T> comp = this.compare(cont.winning.val, cont.winning, temp.val, temp);
+				NodePair<T> comp = this.compare(cont.current.val, cont.current, temp.val, temp);
 				
 				/* Remove the loser from the list */
 				comp.loserHolder.left.right = comp.loserHolder.right;
