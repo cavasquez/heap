@@ -113,8 +113,25 @@ public class heap
 		}
 		
 		/* Print report: */
+		System.out.println("Average execution time (in milliseconds):");
+		String out = "Initiial Tree\t";
+		for(int i = 0; i < test.length; i++) out += (test[i] + "\t");
+		System.out.println(out);
+		
+		for(int i = 0; i < 2; i++)
+		{
+			if(i == MIN_LEFTIST_TREE) out = "MinLeftistTree\t";
+			else if(i == MIN_BINOMIAL_HEAP) out = "MinBinomialHeap\t";
+			for(int j = 0; j < 7; j++)
+			{
+				out += ((results[i][j]/reps) + "\t");
+				
+			}
+			System.out.println(out);
+		}
+		
 		System.out.println("Average cost per operation (in milliseconds):");
-		String out = "tree\t";
+		out = "Initial Tree\t";
 		for(int i = 0; i < test.length; i++) out += (test[i] + "\t");
 		System.out.println(out);
 		Float finalResult;
