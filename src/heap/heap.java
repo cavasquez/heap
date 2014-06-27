@@ -2,6 +2,10 @@ package heap;
 
 import java.util.Random;
 
+import trees.HeapInterface;
+import trees.binomialheap.MinBinomialHeap;
+import trees.leftisttree.MinLeftistTree;
+
 /**
  * Heap is the driver class for the heap project.
  * @author Carlos Vasquez
@@ -35,10 +39,10 @@ public class heap
 	protected void random(int reps, int m)
 	{
 		int MIN_LEFTIST_TREE = 0;
-		int MIN_LEFTIST_HEAP = 1;
+		int MIN_BINOMIAL_HEAP = 1;
 		
 		int[] n = new int[5000];
-		int[][] results = new int[2][7];
+		long[][] results = new long[2][7];
 		int[] test = new int[7];
 		test[0] = 100;
 		test[1] = 500;
@@ -48,6 +52,12 @@ public class heap
 		test[5] = 4000;
 		test[6] = 5000;
 		
+		Instruction[] ops = null;
+		int[] init = null;
+		long start;
+		long stop;
+		HeapInterface<Integer> tree = null;
+		
 		/* Initialize elements */
 		for(int i = 0; i < 2; i++)
 		{
@@ -56,10 +66,56 @@ public class heap
 		
 		/* Start the test(s) */
 		for(int i = 0; i < 7; i++)
-		{
+		{		
 			for(int j = 0; j < reps; j++)
 			{
-				/* First, generate the instructions */
+				/* First, generate the instructions and permutation */
+				init = heap.generateRand(test[i]);
+				ops = heap.generateInstructions(m);
+				
+				/* Perform the test on MinLeftistTree and MinBinomialHeap */
+				for(int k = 0; k < 2; k++)
+				{
+					if(k == MIN_LEFTIST_TREE) tree = new MinLeftistTree<Integer>();
+					else if(k == MIN_BINOMIAL_HEAP) tree = new MinBinomialHeap<Integer>();
+					
+					/* Initialize */
+					for(int l = 0; l < test[i]; l++) { tree.insert(init[l]); }
+					
+					/* Start test */
+					start = System.currentTimeMillis();
+					for(int l = 0; l < m; l++)
+					{
+						switch(ops[l].op)
+						{
+							case INSERT: tree.insert(ops[l].val);
+							break;
+							case DELETE: tree.remove();
+							break;
+						}
+					}
+					stop = System.currentTimeMillis();
+					
+					/* Record time */
+					results[k][i] += (stop - start);
+				}
+			}
+		}
+		
+		/* Print report: */
+		System.out.println("Average cost per operation:");
+		String out = "tree\t";
+		for(int i = 0; i < test.length; i++) out += (test[i] + "\t");
+		System.out.println(out);
+		
+		for(int i = 0; i < reps; i++)
+		{
+			for(int j = 0; j < 2; j++)
+			{
+				if(j == MIN_LEFTIST_TREE) out = "MinLeftistTree\t";
+				else if(j == MIN_BINOMIAL_HEAP) out = "MinBinomialHeap";
+				out += ((results[j][i] / (m * reps)) + "\t");
+				System.out.println(out);
 			}
 		}
 	}
@@ -97,7 +153,6 @@ public class heap
 		{
 			ops[i] = Instruction.makeInstruction(gen.nextInt() % 2, Math.abs(gen.nextInt()));
 		}
-		
 		return ops;
 	}
 }

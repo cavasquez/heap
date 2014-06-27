@@ -9,10 +9,9 @@ package trees.leftisttree;
  */
 public class MinLeftistTree<T extends Comparable<T>> extends LeftistTree<T> 
 {
-	public MinLeftistTree(Node<T> root) 
-	{
-		super(root);
-	}
+	public MinLeftistTree(Node<T> root) { super(root); }
+	
+	public MinLeftistTree() { super(); }
 
 	/**
 	 * This method assumes that value is never null and that neither node1

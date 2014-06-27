@@ -199,4 +199,13 @@ public class LeftistTreeTest
 		assertSame(temp1, test.root.leftChild);
 		assertSame(temp2, test.root.rightChild);
 	}
+	
+	@Test
+	public void testRemoveNull()
+	{
+		test.remove();
+		test.remove();
+		test.remove();
+		test.remove();
+	}
 }

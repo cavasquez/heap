@@ -96,4 +96,11 @@ public class MinBinomialHeapTest
 		
 		System.out.println(test.toString());
 	}
+	
+	@Test
+	public void testRemoveEmpty()
+	{
+		MinBinomialHeap<Integer> test = new MinBinomialHeap<Integer>();
+		test.remove();
+	}
 }
