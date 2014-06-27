@@ -80,15 +80,16 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 		return returner;
 	}
 	
-	protected Node<T> pairwiseCombineCorrect(Node<T> node) throws UnequalChildrenException
+	protected Node<T> pairwiseCombine(Node<T> node) throws UnequalChildrenException
 	{
 		DoublyLinkedList<Node<T>> first = new DoublyLinkedList<Node<T>>(this.root);
+		Node<T> returner = null;
 		
 		CustomVector<DoublyLinkedList<Node<T>>> commonDegrees = 
 				new CustomVector<DoublyLinkedList<Node<T>>>((Class<DoublyLinkedList<Node<T>>>) first.getClass());
 		
 		/* Initialize list */
-		DoublyLinkedList<Node<T>> current;
+		DoublyLinkedList<Node<T>> current = null;
 		DoublyLinkedList<Node<T>> previous = first;
 		Node<T> next = this.root.sibling;
 		
@@ -101,45 +102,53 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 			previous = current;
 			next = next.sibling;
 		}
-		
+				
 		/* Initialize children */
 		next = this.root.child;
-		do
+		if(next != null)
 		{
-			current = new DoublyLinkedList<Node<T>>(next);
-			current.left = previous;
-			previous.right = current;
-			previous = current;
-			next = next.sibling;
-		} while(next != this.root.child);
+			do
+			{
+				current = new DoublyLinkedList<Node<T>>(next);
+				current.left = previous;
+				previous.right = current;
+				previous = current;
+				next = next.sibling;
+			} while(next != this.root.child);
+		}
 		
-		/* Link the list */
-		first.left = current;
-		current.right = first;
-		current = first;
-		
-		/* Now combine the elements */
-		Container<T> cont = new Container<T>(null, current);
-		do
+		if(current != null)
 		{
-			this.pass(cont, commonDegrees);
-		}while(cont.current != first);
+			/* Link the list */
+			first.left = current;
+			current.right = first;
+			current = first.right;
+			
+			/* Now combine the elements */
+			Container<T> cont = new Container<T>(new DoublyLinkedList<Node<T>>(null), current);
+			do
+			{
+				this.pass(cont, commonDegrees);
+			}while(cont.current != first);
+			
+			/* Combine the nodes the list and remove the root */
+			current = first.right;
+			/* Remove the root */
+			first.left.right = first.right;
+			first.right.left = first.left;
+			first = current;
+			
+			/* Combine the list */
+			do
+			{
+				current.val.sibling = current.right.val;
+				current = current.right;
+			}while(current != first);
+			returner = cont.winning.val;
+		}
+		else returner = null;
 		
-		/* Combine the nodes the list and remove the root */
-		current = first.right;
-		/* Remove the root */
-		first.left.right = first.right;
-		first.right.left = first.left;
-		first = current;
-		
-		/* Combine the list */
-		do
-		{
-			current.val.sibling = current.right.val;
-			current = current.right;
-		}while(current != first);
-		
-		return cont.winning.val;
+		return returner;
 	}
 	
 	protected void pass(Container<T> cont,
@@ -181,11 +190,13 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 				commonDegrees.ensureSize(comp.winner.getDegree() + 1);
 				temp = commonDegrees.get(comp.winner.getDegree());
 				if(temp != null) this.mergeDegrees(new Container<T>(null, comp.winnerHolder), commonDegrees);
-				else commonDegrees.set(comp.winner.getDegree(), comp.winnerHolder);				
+				else
+				{
+					/* Set the common degree and progress */
+					commonDegrees.set(comp.winner.getDegree(), comp.winnerHolder);
+					cont.current = cont.current.right;
+				}
 			}
-			
-			/* Progress to the next element */
-			cont.current = cont.current.right;
 		}
 	
 	/**
@@ -193,7 +204,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 	 * @param node	the root
 	 * @return		the new root
 	 */
-	protected Node<T> pairwiseCombine(Node<T> node) throws UnequalChildrenException
+	protected Node<T> pairwiseCombineDepr(Node<T> node) throws UnequalChildrenException
 	{
 		History<T> hist = new History<T>(node.sibling, node, null);
 		Node<T> temp = null;
