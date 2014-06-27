@@ -108,7 +108,45 @@ public class MinBinomialHeapTest
 	@Test
 	public void stressTest2()
 	{
-		
+		MinBinomialHeap<Integer> test = new MinBinomialHeap<Integer>();
+		try 
+		{
+			test.insert(1);
+			test.root.addChild(new Node<Integer>(7));
+			test.root.child.addChild(new Node<Integer>(8));
+			test.root.child.addSibling(new Node<Integer>(3));
+			
+			test.root.addSibling(new Node<Integer>(2));
+			test.root.sibling.addChild(new Node<Integer>(4));
+			test.root.sibling.child.addChild(new Node<Integer>(6));
+			test.root.sibling.child.child.addSibling(new Node<Integer>(7));
+			test.root.sibling.child.child.addChild(new Node<Integer>(8));
+			test.root.sibling.child.addSibling(new Node<Integer>(5));
+			test.root.sibling.child.sibling.addChild(new Node<Integer>(6));
+			test.root.sibling.child.sibling.addSibling(new Node<Integer>(9));
+			
+			test.root.sibling.addSibling(new Node<Integer>(4));
+			
+			test.root.sibling.sibling.addSibling(new Node<Integer>(5));
+			test.root.sibling.sibling.sibling.addChild(new Node<Integer>(9));
+			
+			test.root.sibling.sibling.sibling.addSibling(new Node<Integer>(6));
+			
+			test.root.sibling.sibling.sibling.sibling.addSibling(new Node<Integer>(5));
+			test.root.sibling.sibling.sibling.sibling.sibling.addChild(new Node<Integer>(9));
+			
+			assertEquals(true, test.remove().equals(1));
+			assertEquals(true, test.remove().equals(2));
+			assertEquals(true, test.remove().equals(4));
+			assertEquals(true, test.remove().equals(4));
+			assertEquals(true, test.remove().equals(5));
+			assertEquals(true, test.remove().equals(5));
+		} 
+		catch (UnequalChildrenException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@Test

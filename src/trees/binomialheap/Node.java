@@ -58,7 +58,11 @@ public class Node<T extends Comparable<T>>
 		if(this.degree == child.degree)
 		{
 			if(this.child == null) this.child = child;
-			else this.child.addSibling(child);
+			else
+			{
+				child.sibling = child;
+				this.child.addSibling(child);
+			}
 			this.degree++;
 		}
 		else throw new UnequalChildrenException(this + " and " + child + " have unequal children (" + this.degree + "," + child.degree + ")");

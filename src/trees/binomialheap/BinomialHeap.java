@@ -77,6 +77,61 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 		return returner;
 	}
 	
+	protected Node<T> pairwiseCombineCorrect(Node<T> node) throws UnequalChildrenException
+	{
+		DoublyLinkedList<Node<T>> first = new DoublyLinkedList<Node<T>>(this.root.sibling);
+		
+		CustomVector<DoublyLinkedList<Node<T>>> commonDegrees = 
+				new CustomVector<DoublyLinkedList<Node<T>>>((Class<DoublyLinkedList<Node<T>>>) first.getClass());
+		
+		/* Initialize list */
+		DoublyLinkedList<Node<T>> current;
+		DoublyLinkedList<Node<T>> previous = first;
+		Node<T> next = this.root.sibling.sibling;
+		
+		/* Start with siblings */
+		while(next != this.root)
+		{
+			current = new DoublyLinkedList<Node<T>>(next);
+			current.left = previous;
+			previous.right = current;
+			previous = current;
+			next = next.sibling;
+		}
+		
+		/* Initialize children */
+		next = this.root.child;
+		do
+		{
+			current = new DoublyLinkedList<Node<T>>(next);
+			current.left = previous;
+			previous.right = current;
+			previous = current;
+			next = next.sibling;
+		} while(next != this.root.child);
+		
+		/* Link the list */
+		first.left = current;
+		current.right = first;
+		current = first;
+		
+		/* Now combine the elements */
+		do
+		{
+			this.pass(new Container(null, current), commonDegrees);
+		}while(current != first);
+		
+		return null;
+	}
+	
+	protected void pass(Container<T> cont,
+			CustomVector<DoublyLinkedList<Node<T>>> commonDegrees) throws UnequalChildrenException
+		{
+			/* look for next root */
+			cont.winning = this.compare(current.val, cont.winning).winner;
+			this.mergeDegrees(hist, temp, comp, commonDegrees);
+		}
+	
 	/**
 	 * Merges all the siblings and children of node
 	 * @param node	the root
@@ -197,6 +252,7 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 		{
 			Node<T> common = null;
 			temp = commonDegrees.get(hist.current.getDegree());
+			boolean findPrev = false;
 			
 			/* remove the common degree from list and merge it with its 
 			 * common degree according to the comparator */
@@ -216,6 +272,14 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 			if(commonDegrees.get(common.sibling.getDegree()) == common &&
 				common == comp.loser)
 			{
+				/* If the previous node of node.sibling.degree is the same as
+				 * hist.previous, then the commonDegree at node.sibling.degree will
+				 * point to itself. This is an issue because if a sibling is added
+				 * to hist.previous, then commonDegrees will incorrectly point to
+				 * the wrong "previous" node. Set a flag to find the new "previous"
+				 * node */
+				if(common.sibling == comp.previousLoser) findPrev = true; 
+				
 				/* Replace common with its "previous" in commonDegrees, which
 				 * can be obtained by looking for the common's degree in 
 				 * commonDegrees. 
@@ -236,6 +300,15 @@ public abstract class BinomialHeap<T extends Comparable<T>> implements HeapInter
 			/* remove siblings from loser and make it a child */
 			comp.loser.sibling = comp.loser;
 			comp.winner.addChild(comp.loser);
+			
+			/* Now, fix previous */
+			if(findPrev)
+			{
+				Node<T> offender = commonDegrees.get(common.sibling.getDegree());
+				Node<T> prevDegree = offender.sibling;
+				while(prevDegree.sibling != offender) { prevDegree = prevDegree.sibling; }
+				commonDegrees.set(common.sibling.getDegree(), prevDegree);
+			}
 			
 			/* Attempt to merge the winner with another node if there exists
 			 * another node of equal degree. If not, insert it into commonDegrees */
