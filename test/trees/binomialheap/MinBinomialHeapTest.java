@@ -147,10 +147,27 @@ public class MinBinomialHeapTest
 			System.out.println(test.toString());
 			assertEquals(true, test.remove().equals(1));
 			assertEquals(true, test.remove().equals(2));
+			assertEquals(true, test.remove().equals(3));
 			assertEquals(true, test.remove().equals(4));
 			assertEquals(true, test.remove().equals(4));
 			assertEquals(true, test.remove().equals(5));
 			assertEquals(true, test.remove().equals(5));
+			assertEquals(true, test.remove().equals(5));
+			assertEquals(true, test.remove().equals(6));
+			assertEquals(true, test.remove().equals(6));
+			assertEquals(true, test.remove().equals(6));
+			assertEquals(true, test.remove().equals(7));
+			assertEquals(true, test.remove().equals(7));
+			assertEquals(true, test.remove().equals(8));
+			assertEquals(true, test.remove().equals(8));
+			assertEquals(true, test.remove().equals(9));
+			assertEquals(true, test.remove().equals(9));
+			assertEquals(true, test.remove().equals(9));
+			assertNull(test.remove());
+			assertNull(test.remove());
+			assertNull(test.remove());
+			assertNull(test.remove());
+			assertNull(test.remove());
 		} 
 		catch (UnequalChildrenException e) 
 		{
